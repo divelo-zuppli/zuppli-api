@@ -12,7 +12,7 @@ import { Coupon } from 'src/modules/coupons/entities/coupon.entity';
 import { Product } from 'src/modules/products/entities/product.entity';
 import { Refund } from 'src/modules/refunds/entities/refund.entity';
 import { Shop } from 'src/modules/shops/entities/shop.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { OldUser } from 'src/modules/users/entities/user.entity';
 import { OrderStatus } from './order-status.entity';
 export enum PaymentGatewayType {
   STRIPE = 'stripe',
@@ -28,7 +28,7 @@ export class Order extends CoreEntity {
   @Field(() => ID)
   customer_id: number;
   customer_contact: string;
-  customer: User;
+  customer: OldUser;
   @Type(() => Order)
   parent_order?: Order;
   @Type(() => Order)

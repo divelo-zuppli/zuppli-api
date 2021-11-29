@@ -17,7 +17,7 @@ input AddStaffInput {
 type Address {
   address: UserAddress!
   created_at: DateTime!
-  customer: User!
+  customer: OldUser!
   default: Boolean!
   id: ID!
   title: String!
@@ -436,6 +436,13 @@ input CreateTypeInput {
   settings: TypeSettingsInputType
 }
 
+input CreateUserInput {
+  email: String!
+  fullName: String
+  password: String!
+  phoneNumber: String!
+}
+
 input CreateWithdrawInput {
   amount: Float!
   details: String!
@@ -511,12 +518,12 @@ input LoginInput {
 }
 
 type Mutation {
-  activeUser(id: ID!): User!
+  activeUser(id: ID!): OldUser!
   addPoints(input: AddPointsInput!): Boolean!
   addStaff(input: AddStaffInput!): Boolean!
   approveShop(input: ApproveShopInput!): Shop!
   approveWithdraw(input: ApproveWithdrawInput!): Withdraw!
-  banUser(id: ID!): User!
+  banUser(id: ID!): OldUser!
   changePassword(input: ChangePasswordInput!): PasswordChangeResponse!
   contactUs(input: ContactInput): ContactResponse!
   createAddress(input: CreateAddressInput!): Address!
@@ -533,6 +540,7 @@ type Mutation {
   createTag(input: CreateTagInput!): Tag!
   createTax(input: CreateTaxInput!): Tax!
   createType(input: CreateTypeInput!): Type!
+  createUser(createUserInput: CreateUserInput!): User!
   createWithdraw(input: CreateWithdrawInput!): Withdraw!
   deleteAddress(id: ID!): Address!
   deleteAttribute(id: ID!): Attribute!
@@ -558,8 +566,8 @@ type Mutation {
   logout: Boolean!
   otpLogin(input: OtpLoginInput!): AuthResponse!
   register(input: RegisterInput!): AuthResponse!
-  removeStaff(id: ID!): User!
-  removeUser(id: ID!): User!
+  removeStaff(id: ID!): OldUser!
+  removeUser(id: ID!): OldUser!
   resetPassword(input: ResetPasswordInput!): PasswordChangeResponse!
   sendOtpCode(input: OtpInput!): OtpResponse!
   socialLogin(input: SocialLoginInput!): AuthResponse!
@@ -578,12 +586,30 @@ type Mutation {
   updateTag(input: UpdateTagInput!): Tag!
   updateTax(input: UpdateTaxInput!): Tax!
   updateType(input: UpdateTypeInput!): Type!
-  updateUser(input: UpdateUserInput!): User!
+  updateUser(input: UpdateUserInput!): OldUser!
   upload(attachment: [Upload!]): [Attachment!]!
   verifyCheckout(input: CheckoutVerificationInput!): VerifiedCheckoutData!
   verifyCoupon(code: String!): VerifyCouponResponse!
   verifyForgetPasswordToken(input: VerifyForgetPasswordTokenInput!): PasswordChangeResponse!
   verifyOtpCode(input: VerifyOtpInput!): SuccessResponse!
+}
+
+type OldUser {
+  address: [Address!]
+  created_at: DateTime!
+  email: String!
+  id: ID!
+  is_active: Boolean
+  managed_shop: Shop
+  name: String!
+  orders: [Order!]
+  password: String
+  profile: Profile
+  refunds: [Refund!]
+  shop_id: Float
+  shops: [Shop!]
+  updated_at: DateTime!
+  wallet: Wallet
 }
 
 type Order {
@@ -592,7 +618,7 @@ type Order {
   children: [Order!]!
   coupon: Coupon
   created_at: DateTime!
-  customer: User!
+  customer: OldUser!
   customer_contact: String!
   customer_id: ID!
   delivery_fee: Float!
@@ -832,7 +858,7 @@ type Profile {
   bio: String
   contact: String
   created_at: DateTime!
-  customer: User
+  customer: OldUser
   id: ID!
   socials: [Social!]
   updated_at: DateTime!
@@ -864,7 +890,7 @@ type Query {
   category(id: ID, slug: String): Category!
   coupon(code: String, id: ID): Coupon!
   coupons(first: Int = 15, orderBy: [QueryCouponsOrderByOrderByClause!], page: Int = 1, text: String): CouponPaginator!
-  me: User!
+  me: OldUser!
   order(id: ID, tracking_number: String): Order!
   orderStatus(id: ID!): OrderStatus!
   orderStatuses(first: Int = 15, orderBy: [QueryOrderStatusesOrderByOrderByClause!], page: Int = 1, text: String): OrderStatusPaginator!
@@ -886,7 +912,7 @@ type Query {
   taxClasses(orderBy: [QueryTaxClassesOrderByOrderByClause!], text: String): [Tax!]!
   type(id: ID, slug: String): Type!
   types(orderBy: [QueryTypesOrderByOrderByClause!], text: String): [Type!]!
-  user(id: ID!): User
+  user(id: ID!): OldUser
   users(first: Int = 15, orderBy: [QueryUsersOrderByOrderByClause!], page: Int = 1, text: String): UserPaginator!
   withdraw(id: ID!): Withdraw
   withdraws(first: Int = 15, orderBy: String, page: Int = 1, shop_id: ID, sortedBy: String, status: String): WithdrawPaginator!
@@ -1088,7 +1114,7 @@ input QueryUsersOrderByOrderByClause {
 type Refund {
   amount: String!
   created_at: DateTime!
-  customer: User
+  customer: OldUser
   description: String!
   id: ID!
   images: [Attachment!]
@@ -1237,12 +1263,12 @@ type Shop {
   logo: Attachment
   name: String!
   orders_count: Int!
-  owner: User!
+  owner: OldUser!
   owner_id: Int!
   products_count: Int!
   settings: ShopSettings
   slug: String!
-  staffs: [User!]
+  staffs: [OldUser!]
   updated_at: DateTime!
 }
 
@@ -1569,21 +1595,14 @@ input UpsertVariationsHasMany {
 }
 
 type User {
-  address: [Address!]
-  created_at: DateTime!
+  authUid: String!
+  createdAt: DateTime!
   email: String!
-  id: ID!
-  is_active: Boolean
-  managed_shop: Shop
-  name: String!
-  orders: [Order!]
-  password: String
-  profile: Profile
-  refunds: [Refund!]
-  shop_id: Float
-  shops: [Shop!]
-  updated_at: DateTime!
-  wallet: Wallet
+  fullName: String
+  id: Float!
+  phoneNumber: String!
+  uid: String!
+  updatedAt: DateTime!
 }
 
 type UserAddress {
@@ -1626,7 +1645,7 @@ input UserInputType {
 }
 
 type UserPaginator {
-  data: [User!]!
+  data: [OldUser!]!
   paginatorInfo: PaginatorInfo!
 }
 

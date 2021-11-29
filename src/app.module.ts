@@ -26,6 +26,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ImportsModule } from './modules/imports/imports.module';
 import { WalletsModule } from './modules/wallets/wallets.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
+import { ParameterModule } from './modules/parameter/parameter.module';
 
 @Module({
   imports: [
@@ -47,7 +48,7 @@ import { RefundsModule } from './modules/refunds/refunds.module';
           introspection: true,
           installSubscriptionHandlers: true,
           playground:
-            configService.get<string>('config.environment') === 'local',
+            configService.get<string>('config.environment') === 'development',
           formatError: (error) => {
             console.error(error);
             return error;
@@ -77,6 +78,7 @@ import { RefundsModule } from './modules/refunds/refunds.module';
     ImportsModule,
     WalletsModule,
     RefundsModule,
+    ParameterModule,
   ],
   controllers: [],
   providers: [],

@@ -8,13 +8,12 @@ export default registerAs('config', () => {
       selfApiUrl: process.env.SELF_API_URL,
     },
     database: {
-      client: process.env.DATABASE_CLIENT,
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
+      url: process.env.DATABASE_URL,
       log: process.env.DATABASE_LOG || 'yes',
+    },
+    acl: {
+      companyUid: process.env.BASIC_ACL_COMPANY_UID,
+      accessKey: process.env.BASIC_ACL_ACCESS_KEY,
     },
   };
 });

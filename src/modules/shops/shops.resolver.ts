@@ -8,7 +8,7 @@ import { GetShopArgs } from './dto/get-shop.args';
 import { AddStaffInput } from './dto/add-staff.input';
 import { UserPaginator } from 'src/modules/users/dto/get-users.args';
 import { GetStaffsArgs } from './dto/get-staffs.args';
-import { User } from 'src/modules/users/entities/user.entity';
+import { OldUser } from 'src/modules/users/entities/user.entity';
 
 @Resolver(() => Shop)
 export class ShopsResolver {
@@ -62,7 +62,7 @@ export class ShopsResolver {
     return true;
     // return this.shopsService.create(addStaffInput);
   }
-  @Mutation(() => User)
+  @Mutation(() => OldUser)
   removeStaff(@Args('id', { type: () => ID }) id: number) {
     return this.shopsService.remove(id);
   }

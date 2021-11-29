@@ -1,6 +1,8 @@
+import { UsePipes, ValidationPipe } from '@nestjs/common';
+
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { UsersService } from './users.service';
-import { User } from './entities/user.entity';
+
+import { OldUser } from './entities/user.entity';
 import {
   AuthResponse,
   ChangePasswordInput,
@@ -24,19 +26,26 @@ import { ProfileInput } from './dto/create-profile.input';
 import { Profile } from './entities/profile.entity';
 import { UpdateProfileArgs } from './dto/update-profile.args';
 
+import { User } from './models/user.model';
+
+import { UsersService } from './users.service';
+
+import { CreateUserInput } from './dto/create-user-input.dto';
+
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly service: UsersService) {}
 
   @Mutation(() => AuthResponse)
   async register(
     @Args('input') createUserInput: RegisterInput,
   ): Promise<AuthResponse> {
-    return this.usersService.register(createUserInput);
+    return this.service.register(createUserInput);
   }
   @Mutation(() => AuthResponse)
   async login(@Args('input') loginInput: LoginInput): Promise<AuthResponse> {
-    return this.usersService.login(loginInput);
+    return this.service.login(loginInput);
   }
   @Mutation(() => AuthResponse)
   async socialLogin(
@@ -90,20 +99,20 @@ export class UsersResolver {
   async changePassword(
     @Args('input') changePasswordInput: ChangePasswordInput,
   ): Promise<PasswordChangeResponse> {
-    return this.usersService.changePassword(changePasswordInput);
+    return this.service.changePassword(changePasswordInput);
   }
   @Mutation(() => PasswordChangeResponse)
   async forgetPassword(
     @Args('input') forgetPasswordInput: ForgetPasswordInput,
   ): Promise<PasswordChangeResponse> {
-    return this.usersService.forgetPassword(forgetPasswordInput);
+    return this.service.forgetPassword(forgetPasswordInput);
   }
   @Mutation(() => PasswordChangeResponse)
   async verifyForgetPasswordToken(
     @Args('input')
     verifyForgetPasswordTokenInput: VerifyForgetPasswordTokenInput,
   ): Promise<PasswordChangeResponse> {
-    return this.usersService.verifyForgetPasswordToken(
+    return this.service.verifyForgetPasswordToken(
       verifyForgetPasswordTokenInput,
     );
   }
@@ -112,41 +121,41 @@ export class UsersResolver {
     @Args('input')
     resetPasswordInput: ResetPasswordInput,
   ): Promise<PasswordChangeResponse> {
-    return this.usersService.resetPassword(resetPasswordInput);
+    return this.service.resetPassword(resetPasswordInput);
   }
 
   @Query(() => UserPaginator, { name: 'users' })
   async getUsers(@Args() getUsersArgs: GetUsersArgs): Promise<UserPaginator> {
-    return this.usersService.getUsers(getUsersArgs);
+    return this.service.getUsers(getUsersArgs);
   }
 
-  @Query(() => User, { name: 'me' })
-  async me(): Promise<User> {
-    return this.usersService.me();
+  @Query(() => OldUser, { name: 'me' })
+  async me(): Promise<OldUser> {
+    return this.service.me();
   }
 
-  @Query(() => User, { name: 'user', nullable: true })
-  getUser(@Args() getUserArgs: GetUserArgs): User {
-    return this.usersService.getUser(getUserArgs);
+  @Query(() => OldUser, { name: 'user', nullable: true })
+  getUser(@Args() getUserArgs: GetUserArgs): OldUser {
+    return this.service.getUser(getUserArgs);
   }
-  @Mutation(() => User)
+  @Mutation(() => OldUser)
   updateUser(@Args('input') updateUserInput: UpdateUserInput) {
-    return this.usersService.updateUser(updateUserInput.id, updateUserInput);
+    return this.service.updateUser(updateUserInput.id, updateUserInput);
   }
-  @Mutation(() => User)
+  @Mutation(() => OldUser)
   activeUser(@Args('id', { type: () => ID }) id: number) {
     console.log(id);
-    // return this.usersService.getUsers(updateUserInput.id);
+    // return this.service.getUsers(updateUserInput.id);
   }
-  @Mutation(() => User)
+  @Mutation(() => OldUser)
   banUser(@Args('id', { type: () => ID }) id: number) {
     console.log(id);
-    // return this.usersService.getUsers(updateUserInput.id);
+    // return this.service.getUsers(updateUserInput.id);
   }
 
-  @Mutation(() => User)
+  @Mutation(() => OldUser)
   removeUser(@Args('id', { type: () => ID }) id: number) {
-    return this.usersService.remove(id);
+    return this.service.remove(id);
   }
   @Mutation(() => Profile)
   createProfile(@Args('input') profileInput: ProfileInput) {
@@ -158,6 +167,15 @@ export class UsersResolver {
   }
   @Mutation(() => Profile)
   deleteProfile(@Args('id', { type: () => ID }) id: number) {
-    return this.usersService.remove(id);
+    return this.service.remove(id);
+  }
+
+  //
+
+  @Mutation(() => User, { name: 'createUser' })
+  public create(
+    @Args('createUserInput') input: CreateUserInput,
+  ): Promise<User> {
+    return this.service.create(input);
   }
 }

@@ -9,7 +9,7 @@ import { Profile } from './profile.entity';
 
 @InputType('UserInputType', { isAbstract: true })
 @ObjectType()
-export class User extends CoreEntity {
+export class OldUser extends CoreEntity {
   name: string;
   email: string;
   password?: string;

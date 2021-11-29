@@ -1,6 +1,6 @@
 import { InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { OldUser } from 'src/modules/users/entities/user.entity';
 
 export enum AddressType {
   BILLING = 'billing',
@@ -16,7 +16,7 @@ export class Address extends CoreEntity {
   default: boolean;
   address: UserAddress;
   type: AddressType;
-  customer: User;
+  customer: OldUser;
 }
 
 @InputType('UserAddressInputType', { isAbstract: true })

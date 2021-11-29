@@ -1,7 +1,7 @@
 import { ObjectType, InputType } from '@nestjs/graphql';
 import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { User } from './user.entity';
+import { OldUser } from './user.entity';
 
 @InputType('ProfileInputType', { isAbstract: true })
 @ObjectType()
@@ -10,7 +10,7 @@ export class Profile extends CoreEntity {
   bio?: string;
   socials?: Social[];
   contact?: string;
-  customer?: User;
+  customer?: OldUser;
 }
 
 @InputType('SocialInputType', { isAbstract: true })

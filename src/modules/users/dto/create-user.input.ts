@@ -5,7 +5,7 @@ import {
   PickType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { User } from '../entities/user.entity';
+import { OldUser } from '../entities/user.entity';
 
 enum Permission {
   SUPER_ADMIN = 'Super admin',
@@ -15,7 +15,7 @@ enum Permission {
 }
 registerEnumType(Permission, { name: 'Permission' });
 @InputType()
-export class RegisterInput extends PickType(User, [
+export class RegisterInput extends PickType(OldUser, [
   'name',
   'email',
   'password',
@@ -25,7 +25,7 @@ export class RegisterInput extends PickType(User, [
 
 @InputType()
 export class LoginInput extends PartialType(
-  PickType(User, ['email', 'password']),
+  PickType(OldUser, ['email', 'password']),
 ) {}
 
 @InputType()

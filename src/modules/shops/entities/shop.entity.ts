@@ -13,15 +13,15 @@ import {
   Location,
   ShopSocials,
 } from 'src/modules/settings/entities/setting.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { OldUser } from 'src/modules/users/entities/user.entity';
 
 @InputType('ShopInputType', { isAbstract: true })
 @ObjectType()
 export class Shop extends CoreEntity {
   @Field(() => Int)
   owner_id: number;
-  owner: User;
-  staffs?: User[];
+  owner: OldUser;
+  staffs?: OldUser[];
   is_active: boolean;
   @Field(() => Int)
   orders_count: number;

@@ -1,4 +1,4 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { graphqlUploadExpress } from 'graphql-upload';
 import { NestFactory } from '@nestjs/core';
@@ -18,7 +18,6 @@ async function bootstrap() {
   const ENV = configService.get<string>('config.environment' as never);
 
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe());
   app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }));
 
   await app.listen(PORT, () => {

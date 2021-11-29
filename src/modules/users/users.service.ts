@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import Fuse from 'fuse.js';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { plainToClass } from 'class-transformer';
+import { BasicAclService } from 'nestjs-basic-acl-sdk';
+
 import {
   AuthResponse,
   ChangePasswordInput,
@@ -10,25 +15,38 @@ import {
   VerifyForgetPasswordTokenInput,
 } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { User } from './entities/user.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { OldUser } from './entities/user.entity';
 import { GetUserArgs } from './dto/get-user.args';
 import usersJson from './users.json';
-import Fuse from 'fuse.js';
 import { paginate } from 'src/common/pagination/paginate';
-import { plainToClass } from 'class-transformer';
 import { GetUsersArgs, UserPaginator } from './dto/get-users.args';
-const users = plainToClass(User, usersJson);
+
+import { User } from './models/user.model';
+
+import { PrismaService } from '../../prisma.service';
+
+import { CreateUserInput } from './dto/create-user-input.dto';
+import { ParameterService } from '../parameter/parameter.service';
+
+const users = plainToClass(OldUser, usersJson);
 const options = {
   keys: ['name', 'type.slug', 'categories.slug', 'status'],
   threshold: 0.3,
 };
 const fuse = new Fuse(users, options);
+
+// TODO: change the service name
 @Injectable()
 export class UsersService {
-  private users: User[] = users;
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly basicAclService: BasicAclService,
+    private readonly parameterService: ParameterService,
+  ) {}
+
+  private users: OldUser[] = users;
   async register(createUserInput: RegisterInput): Promise<AuthResponse> {
-    const user: User = {
+    const user: OldUser = {
       id: uuidv4(),
       ...users[0],
       ...createUserInput,
@@ -84,7 +102,7 @@ export class UsersService {
   async getUsers({ text, first, page }: GetUsersArgs): Promise<UserPaginator> {
     const startIndex = (page - 1) * first;
     const endIndex = page * first;
-    let data: User[] = this.users;
+    let data: OldUser[] = this.users;
     if (text?.replace(/%/g, '')) {
       data = fuse.search(text)?.map(({ item }) => item);
     }
@@ -94,10 +112,10 @@ export class UsersService {
       paginatorInfo: paginate(data.length, page, first, results.length),
     };
   }
-  public getUser(getUserArgs: GetUserArgs): User {
+  public getUser(getUserArgs: GetUserArgs): OldUser {
     return this.users.find((user) => user.id === getUserArgs.id);
   }
-  me(): User {
+  me(): OldUser {
     return this.users[0];
   }
 
@@ -107,5 +125,70 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  // my code
+
+  public async create(input: CreateUserInput): Promise<User> {
+    const { email } = input;
+
+    const exisingUserByEmail = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+
+    if (exisingUserByEmail) {
+      throw new ConflictException(
+        `already exist an user with the email ${email}.`,
+      );
+    }
+
+    const { phoneNumber } = input;
+
+    const exisingUserByPhoneNumber = await this.prismaService.user.findUnique({
+      where: { phoneNumber },
+    });
+
+    if (exisingUserByPhoneNumber) {
+      throw new ConflictException(
+        `already exist an user with the phone number ${phoneNumber}.`,
+      );
+    }
+
+    const { password, fullName } = input;
+
+    const roleCode = await this.parameterService.getValue({
+      name: 'BASIC_ACL_CUSTOMER_ROLE_CODE',
+    });
+
+    const aclUser = await this.basicAclService.createUser({
+      email,
+      password,
+      phone: `+57${phoneNumber}`,
+      roleCode: roleCode,
+      sendEmail: true,
+      emailTemplateParams: {
+        fullName,
+      },
+    });
+
+    try {
+      const { authUid } = aclUser;
+
+      const createdUser = await this.prismaService.user.create({
+        data: {
+          authUid,
+          email,
+          phoneNumber,
+        },
+      });
+
+      return createdUser;
+    } catch (error) {
+      Logger.warn('deleting the user in ACL', UsersService.name);
+
+      await this.basicAclService.deleteUser({
+        authUid: aclUser.authUid,
+      });
+    }
   }
 }
