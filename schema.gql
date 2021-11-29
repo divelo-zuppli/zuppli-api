@@ -1,0 +1,1749 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AddPointsInput {
+  customer_id: ID!
+  points: Int!
+}
+
+input AddStaffInput {
+  email: String!
+  name: String!
+  password: String!
+  shop_id: ID!
+}
+
+type Address {
+  address: UserAddress!
+  created_at: DateTime!
+  customer: User!
+  default: Boolean!
+  id: ID!
+  title: String!
+  type: AddressType!
+  updated_at: DateTime!
+}
+
+input AddressInputType {
+  address: UserAddressInputType!
+  customer: UserInputType!
+  default: Boolean!
+  title: String!
+  type: AddressType!
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+}
+
+type Analytics {
+  created_at: DateTime!
+  id: ID!
+  newCustomers: Int
+  todaysRevenue: Float
+  totalOrders: Int
+  totalRevenue: Float
+  totalShops: Float
+  totalYearSaleByMonth: [TotalYearSaleByMonth!]
+  updated_at: DateTime!
+}
+
+input ApproveShopInput {
+  admin_commission_rate: Float!
+  id: ID!
+}
+
+input ApproveWithdrawInput {
+  id: ID!
+  status: WithdrawStatus
+}
+
+type Attachment {
+  id: ID
+  original: String
+  thumbnail: String
+}
+
+input AttachmentInput {
+  id: ID
+  original: String
+  thumbnail: String
+}
+
+type Attribute {
+  created_at: DateTime!
+  id: ID!
+  name: String!
+  shop: Shop!
+  shop_id: Int!
+  slug: String!
+  updated_at: DateTime!
+  values: [AttributeValue!]!
+}
+
+input AttributeInputType {
+  name: String!
+  shop: ShopInputType!
+  shop_id: Int!
+  slug: String!
+  values: [AttributeValueInputType!]!
+}
+
+type AttributeValue {
+  attribute: Attribute!
+  created_at: DateTime!
+  id: ID!
+  meta: String
+  shop_id: Int!
+  updated_at: DateTime!
+  value: String!
+}
+
+input AttributeValueInput {
+  id: ID!
+  meta: String
+  value: String!
+}
+
+input AttributeValueInputType {
+  attribute: AttributeInputType!
+  meta: String
+  shop_id: Int!
+  value: String!
+}
+
+type AuthResponse {
+  permissions: [String!]!
+  token: String!
+}
+
+type Balance {
+  admin_commission_rate: Float!
+  current_balance: Float!
+  id: ID
+  payment_info: PaymentInfo!
+  shop: Shop!
+  total_earnings: Float!
+  withdrawn_amount: Float!
+}
+
+input BalanceInput {
+  id: ID
+  payment_info: PaymentInfoInputType!
+}
+
+input BalanceInputType {
+  admin_commission_rate: Float!
+  current_balance: Float!
+  id: ID
+  payment_info: PaymentInfoInputType!
+  shop: ShopInputType!
+  total_earnings: Float!
+  withdrawn_amount: Float!
+}
+
+type Banner {
+  created_at: DateTime!
+  description: String
+  id: ID!
+  image: Attachment!
+  title: String
+  updated_at: DateTime!
+}
+
+input BannerInputType {
+  description: String
+  image: AttachmentInput!
+  title: String
+}
+
+input CardInput {
+  cvv: String!
+  email: String
+  expiryMonth: String!
+  expiryYear: String!
+  number: String!
+}
+
+type Category {
+  children: [Category!]
+  created_at: DateTime!
+  details: String
+  icon: String
+  id: ID!
+  image: Attachment
+  name: String!
+  parent: Category
+  parent_id: ID
+  products: [Product!]
+  products_count: Int
+  slug: String!
+  type: Type
+  updated_at: DateTime!
+}
+
+input CategoryInputType {
+  children: [CategoryInputType!]
+  details: String
+  icon: String
+  image: AttachmentInput
+  name: String!
+  parent: CategoryInputType
+  parent_id: ID
+  products: [ProductInputType!]
+  products_count: Int
+  slug: String!
+  type: TypeInputType
+}
+
+type CategoryPaginator {
+  data: [Category!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+input ChangePasswordInput {
+  newPassword: String!
+  oldPassword: String!
+}
+
+input CheckoutVerificationInput {
+  amount: Float!
+  billing_address: UserAddressInput
+  products: [ConnectProductOrderPivot!]!
+  shipping_address: UserAddressInput
+}
+
+input ConnectBelongsTo {
+  connect: ID!
+}
+
+input ConnectProductOrderPivot {
+  order_quantity: Int!
+  product_id: ID!
+  subtotal: Float!
+  unit_price: Float!
+  variation_option_id: ID
+}
+
+input ConnectTypeBelongsTo {
+  connect: ID!
+}
+
+type ContactDetails {
+  contact: String!
+  location: Location!
+  socials: [ShopSocials!]!
+  website: String!
+}
+
+input ContactDetailsInputType {
+  contact: String!
+  location: LocationInputType!
+  socials: [ShopSocialsInputType!]!
+  website: String!
+}
+
+input ContactInput {
+  description: String!
+  email: String!
+  name: String!
+  subject: String!
+}
+
+type ContactResponse {
+  message: String!
+  success: Boolean!
+}
+
+type Coupon {
+  active_from: String!
+  amount: Float!
+  code: String!
+  created_at: DateTime!
+  description: String
+  expire_at: String!
+  id: ID!
+  image: Attachment
+  is_valid: Boolean!
+  orders: [Order!]
+  type: CouponType!
+  updated_at: DateTime!
+}
+
+input CouponInputType {
+  active_from: String!
+  amount: Float!
+  code: String!
+  description: String
+  expire_at: String!
+  image: AttachmentInput
+  is_valid: Boolean!
+  orders: [OrderInputType!]
+  type: CouponType!
+}
+
+type CouponPaginator {
+  data: [Coupon!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+enum CouponType {
+  DEFAULT_COUPON
+  FIXED_COUPON
+  FREE_SHIPPING_COUPON
+  PERCENTAGE_COUPON
+}
+
+input CreateAddressInput {
+  address: UserAddressInputType!
+  customer: UserInputType!
+  default: Boolean!
+  title: String!
+  type: AddressType!
+}
+
+input CreateAttributeInput {
+  name: String!
+  shop_id: Int!
+  values: [AttributeValueInput!]!
+}
+
+input CreateCategoryInput {
+  details: String
+  icon: String
+  image: AttachmentInput
+  name: String!
+  parent: Int
+  type: ConnectTypeBelongsTo
+}
+
+input CreateCouponInput {
+  active_from: String!
+  amount: Float!
+  code: String!
+  description: String
+  expire_at: String!
+  image: AttachmentInput
+  type: CouponType!
+}
+
+input CreateOrderInput {
+  amount: Float!
+  billing_address: UserAddressInput
+  card: CardInput
+  coupon_id: ID
+  customer_contact: String!
+  delivery_fee: Float
+  delivery_time: String!
+  discount: Float
+  paid_total: Float
+  payment_gateway: PaymentGatewayType
+  payment_id: String
+  products: [ConnectProductOrderPivot!]!
+  sales_tax: Float!
+  shipping_address: UserAddressInput
+  shop_id: ID
+  status: String!
+  total: Float
+  use_wallet_points: Boolean
+}
+
+input CreateOrderStatusInput {
+  color: String!
+  name: String!
+  serial: Int!
+}
+
+input CreateProductInput {
+  categories: [ID!]
+  description: String!
+  gallery: [AttachmentInput!]
+  height: String
+  image: AttachmentInput
+  in_stock: Boolean!
+  is_taxable: Boolean!
+  length: String
+  max_price: Float
+  min_price: Float
+  name: String!
+  price: Float
+  product_type: ProductType!
+  quantity: Int!
+  sale_price: Float
+  shop_id: Int!
+  sku: String
+  status: ProductStatus!
+  tags: [ID!]
+  type_id: Int!
+  unit: String!
+  variation_options: UpsertVariationsHasMany
+  variations: [AttributeValueInputType!]
+  width: String
+}
+
+input CreateRefundInput {
+  description: String!
+  images: [AttachmentInput!]
+  order_id: ID!
+  title: String!
+}
+
+input CreateShippingInput {
+  amount: Float!
+  is_global: Boolean = true
+  name: String!
+  type: ShippingType!
+}
+
+input CreateShopInput {
+  address: UserAddressInputType!
+  balance: BalanceInput
+  categories: [ID!]
+  cover_image: AttachmentInput
+  description: String
+  logo: AttachmentInput
+  name: String!
+  settings: ShopSettingsInputType
+}
+
+input CreateTagInput {
+  details: String
+  icon: String
+  image: AttachmentInput
+  name: String!
+  type: ConnectTypeBelongsTo
+}
+
+input CreateTaxInput {
+  city: String
+  country: String
+  is_global: Boolean = true
+  name: String!
+  on_shipping: Boolean
+  priority: Int
+  rate: Float!
+  state: String
+  zip: String
+}
+
+input CreateTypeInput {
+  banners: [BannerInputType!]
+  icon: String!
+  name: String!
+  promotional_sliders: [AttachmentInput!]
+  settings: TypeSettingsInputType
+}
+
+input CreateWithdrawInput {
+  amount: Float!
+  details: String!
+  note: String!
+  payment_method: String!
+  shop_id: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DeliveryTime {
+  description: String!
+  title: String!
+}
+
+input DeliveryTimeInputType {
+  description: String!
+  title: String!
+}
+
+type FacebookSettings {
+  appId: String!
+  isEnable: Boolean!
+  pageId: String!
+}
+
+input FacebookSettingsInputType {
+  appId: String!
+  isEnable: Boolean!
+  pageId: String!
+}
+
+input ForgetPasswordInput {
+  email: String!
+}
+
+type GoogleSettings {
+  isEnable: Boolean!
+  tagManagerId: String!
+}
+
+input GoogleSettingsInputType {
+  isEnable: Boolean!
+  tagManagerId: String!
+}
+
+type Location {
+  city: String
+  country: String
+  formattedAddress: String
+  lat: Float
+  lng: Float
+  state: String
+  zip: String
+}
+
+input LocationInputType {
+  city: String
+  country: String
+  formattedAddress: String
+  lat: Float
+  lng: Float
+  state: String
+  zip: String
+}
+
+input LoginInput {
+  email: String
+  password: String
+}
+
+type Mutation {
+  activeUser(id: ID!): User!
+  addPoints(input: AddPointsInput!): Boolean!
+  addStaff(input: AddStaffInput!): Boolean!
+  approveShop(input: ApproveShopInput!): Shop!
+  approveWithdraw(input: ApproveWithdrawInput!): Withdraw!
+  banUser(id: ID!): User!
+  changePassword(input: ChangePasswordInput!): PasswordChangeResponse!
+  contactUs(input: ContactInput): ContactResponse!
+  createAddress(input: CreateAddressInput!): Address!
+  createAttribute(input: CreateAttributeInput!): Attribute!
+  createCategory(input: CreateCategoryInput!): Category!
+  createCoupon(input: CreateCouponInput!): Coupon!
+  createOrder(input: CreateOrderInput!): Order!
+  createOrderStatus(input: CreateOrderStatusInput!): OrderStatus!
+  createProduct(input: CreateProductInput!): Product!
+  createProfile(input: ProfileInput!): Profile!
+  createRefund(input: CreateRefundInput!): Refund!
+  createShipping(input: CreateShippingInput!): Shipping!
+  createShop(input: CreateShopInput!): Shop!
+  createTag(input: CreateTagInput!): Tag!
+  createTax(input: CreateTaxInput!): Tax!
+  createType(input: CreateTypeInput!): Type!
+  createWithdraw(input: CreateWithdrawInput!): Withdraw!
+  deleteAddress(id: ID!): Address!
+  deleteAttribute(id: ID!): Attribute!
+  deleteCategory(id: ID!): Category!
+  deleteCoupon(id: ID!): Coupon!
+  deleteOrder(id: ID!): Order!
+  deleteOrderStatus(id: ID!): OrderStatus!
+  deleteProduct(id: ID!): Product!
+  deleteProfile(id: ID!): Profile!
+  deleteRefund(id: ID!): Refund!
+  deleteShipping(id: ID!): Shipping!
+  deleteShop(id: ID!): Shop!
+  deleteTag(id: ID!): Tag!
+  deleteTax(id: ID!): Tax!
+  deleteType(id: ID!): Type!
+  deleteWithdraw(id: ID!): Withdraw!
+  disapproveShop(id: ID!): Shop!
+  forgetPassword(input: ForgetPasswordInput!): PasswordChangeResponse!
+  importAttributes(csv: Upload!, shop_id: ID!): Boolean!
+  importProducts(csv: Upload!, shop_id: ID!): Boolean!
+  importVariationOptions(csv: Upload!, shop_id: ID!): Boolean!
+  login(input: LoginInput!): AuthResponse!
+  logout: Boolean!
+  otpLogin(input: OtpLoginInput!): AuthResponse!
+  register(input: RegisterInput!): AuthResponse!
+  removeStaff(id: ID!): User!
+  removeUser(id: ID!): User!
+  resetPassword(input: ResetPasswordInput!): PasswordChangeResponse!
+  sendOtpCode(input: OtpInput!): OtpResponse!
+  socialLogin(input: SocialLoginInput!): AuthResponse!
+  updateAddress(input: UpdateAddressInput!): Address!
+  updateAttribute(input: UpdateAttributeInput!): Attribute!
+  updateCategory(input: UpdateCategoryInput!): Category!
+  updateCoupon(input: UpdateCouponInput!): Coupon!
+  updateOrder(input: UpdateOrderInput!): Order!
+  updateOrderStatus(input: UpdateOrderStatusInput!): OrderStatus!
+  updateProduct(input: UpdateProductInput!): Product!
+  updateProfile(id: ID!, input: ProfileInput!): Profile!
+  updateRefund(input: UpdateRefundInput!): Refund!
+  updateSettings(input: SettingsInput!): Setting!
+  updateShipping(input: UpdateShippingInput!): Shipping!
+  updateShop(input: UpdateShopInput!): Shop!
+  updateTag(input: UpdateTagInput!): Tag!
+  updateTax(input: UpdateTaxInput!): Tax!
+  updateType(input: UpdateTypeInput!): Type!
+  updateUser(input: UpdateUserInput!): User!
+  upload(attachment: [Upload!]): [Attachment!]!
+  verifyCheckout(input: CheckoutVerificationInput!): VerifiedCheckoutData!
+  verifyCoupon(code: String!): VerifyCouponResponse!
+  verifyForgetPasswordToken(input: VerifyForgetPasswordTokenInput!): PasswordChangeResponse!
+  verifyOtpCode(input: VerifyOtpInput!): SuccessResponse!
+}
+
+type Order {
+  amount: Float!
+  billing_address: UserAddress!
+  children: [Order!]!
+  coupon: Coupon
+  created_at: DateTime!
+  customer: User!
+  customer_contact: String!
+  customer_id: ID!
+  delivery_fee: Float!
+  delivery_time: String!
+  discount: Float
+  id: ID!
+  paid_total: Float!
+  parent_order: Order
+  payment_gateway: PaymentGatewayType!
+  payment_id: String
+  products: [Product!]!
+  refund: Refund
+  sales_tax: Float!
+  shipping_address: UserAddress!
+  shop: Shop!
+  status: OrderStatus!
+  total: Float!
+  tracking_number: String!
+  updated_at: DateTime!
+  wallet_point: WalletPoint
+}
+
+input OrderInputType {
+  amount: Float!
+  billing_address: UserAddressInputType!
+  children: [OrderInputType!]!
+  coupon: CouponInputType
+  customer: UserInputType!
+  customer_contact: String!
+  customer_id: ID!
+  delivery_fee: Float!
+  delivery_time: String!
+  discount: Float
+  paid_total: Float!
+  parent_order: OrderInputType
+  payment_gateway: PaymentGatewayType!
+  payment_id: String
+  products: [ProductInputType!]!
+  refund: RefundInputType
+  sales_tax: Float!
+  shipping_address: UserAddressInputType!
+  shop: ShopInputType!
+  status: OrderStatusInputType!
+  total: Float!
+  tracking_number: String!
+  wallet_point: WalletPointInputType
+}
+
+type OrderPaginator {
+  data: [Order!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+type OrderProductPivot {
+  order_quantity: Int!
+  subtotal: Float!
+  unit_price: Float!
+  variation_option_id: ID
+}
+
+type OrderStatus {
+  color: String!
+  created_at: DateTime!
+  id: ID!
+  name: String!
+  serial: Int!
+  updated_at: DateTime!
+}
+
+input OrderStatusInputType {
+  color: String!
+  name: String!
+  serial: Int!
+}
+
+type OrderStatusPaginator {
+  data: [OrderStatus!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+input OtpInput {
+  phone_number: String!
+}
+
+input OtpLoginInput {
+  code: String!
+  email: String
+  name: String
+  otp_id: String!
+  phone_number: String!
+}
+
+type OtpResponse {
+  id: String!
+  is_contact_exist: Boolean!
+  message: String!
+  phone_number: String!
+  provider: String!
+  success: Boolean!
+}
+
+type PaginatorInfo {
+  count: Int!
+  currentPage: Int!
+  firstItem: Int!
+  hasMorePages: Boolean!
+  lastItem: Int!
+  lastPage: Int!
+  perPage: Int!
+  total: Int!
+}
+
+type PasswordChangeResponse {
+  message: String!
+  success: Boolean!
+}
+
+enum PaymentGatewayType {
+  CASH_ON_DELIVERY
+  STRIPE
+}
+
+type PaymentInfo {
+  account: String
+  bank: String
+  email: String
+  name: String
+}
+
+input PaymentInfoInputType {
+  account: String
+  bank: String
+  email: String
+  name: String
+}
+
+enum Permission {
+  CUSTOMER
+  STAFF
+  STORE_OWNER
+  SUPER_ADMIN
+}
+
+input PivotInputType {
+  order_quantity: Int!
+  subtotal: Float!
+  unit_price: Float!
+  variation_option_id: ID
+}
+
+type Product {
+  categories: [Category!]!
+  created_at: DateTime!
+  description: String!
+  gallery: [Attachment!]
+  height: String
+  id: ID!
+  image: Attachment
+  in_stock: Boolean!
+  is_taxable: Boolean!
+  length: String
+  max_price: Float
+  min_price: Float
+  name: String!
+  orders: [Order!]
+  pivot: OrderProductPivot
+  price: Float
+  product_type: ProductType!
+  quantity: Int!
+  related_products(limit: Int): [Product!]
+  sale_price: Float
+  shop: Shop!
+  shop_id: Int!
+  sku: String
+  slug: String!
+  status: ProductStatus!
+  tags: [Tag!]
+  type: Type!
+  type_id: Int!
+  unit: String!
+  updated_at: DateTime!
+  variation_options: [Variation!]
+  variations: [AttributeValue!]
+  width: String
+}
+
+input ProductInputType {
+  categories: [CategoryInputType!]!
+  description: String!
+  gallery: [AttachmentInput!]
+  height: String
+  image: AttachmentInput
+  in_stock: Boolean!
+  is_taxable: Boolean!
+  length: String
+  max_price: Float
+  min_price: Float
+  name: String!
+  orders: [OrderInputType!]
+  pivot: PivotInputType
+  price: Float
+  product_type: ProductType!
+  quantity: Int!
+  related_products: [ProductInputType!]
+  sale_price: Float
+  shop: ShopInputType!
+  shop_id: Int!
+  sku: String
+  slug: String!
+  status: ProductStatus!
+  tags: [TagInputType!]
+  type: TypeInputType!
+  type_id: Int!
+  unit: String!
+  variation_options: [VariationInputType!]
+  variations: [AttributeValueInputType!]
+  width: String
+}
+
+type ProductPaginator {
+  data: [Product!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISH
+}
+
+enum ProductType {
+  SIMPLE
+  VARIABLE
+}
+
+type Profile {
+  avatar: Attachment
+  bio: String
+  contact: String
+  created_at: DateTime!
+  customer: User
+  id: ID!
+  socials: [Social!]
+  updated_at: DateTime!
+}
+
+input ProfileInput {
+  avatar: AttachmentInput
+  bio: String
+  contact: String
+  customer: ConnectBelongsTo!
+  socials: [SocialInputType!]
+}
+
+input ProfileInputType {
+  avatar: AttachmentInput
+  bio: String
+  contact: String
+  customer: UserInputType
+  socials: [SocialInputType!]
+}
+
+type Query {
+  address(id: Int!): Address!
+  addresses: [Address!]!
+  analytics: Analytics!
+  attribute(id: ID, slug: String): Attribute!
+  attributes(orderBy: [QueryAttributesOrderByOrderByClause!], shop_id: ID): [Attribute!]!
+  categories(first: Int = 15, hasType: QueryCategoriesHasTypeWhereHasConditions, name: String, orderBy: [QueryCategoriesOrderByOrderByClause!], page: Int = 1, parent: ID = null, text: String): CategoryPaginator!
+  category(id: ID, slug: String): Category!
+  coupon(code: String, id: ID): Coupon!
+  coupons(first: Int = 15, orderBy: [QueryCouponsOrderByOrderByClause!], page: Int = 1, text: String): CouponPaginator!
+  me: User!
+  order(id: ID, tracking_number: String): Order!
+  orderStatus(id: ID!): OrderStatus!
+  orderStatuses(first: Int = 15, orderBy: [QueryOrderStatusesOrderByOrderByClause!], page: Int = 1, text: String): OrderStatusPaginator!
+  orders(customer_id: ID, first: Int = 15, orderBy: String, page: Int = 1, shop_id: ID, sortedBy: String, tracking_number: String): OrderPaginator!
+  popularProducts(limit: Int!, shop_id: ID): [Product!]!
+  product(id: ID, slug: String): Product!
+  products(first: Int = 15, hasCategories: QueryProductsHasCategoriesWhereHasConditions, hasType: QueryProductsHasTypeWhereHasConditions, orderBy: [QueryProductsOrderByOrderByClause!], page: Int = 1, shop_id: ID, status: String, text: String): ProductPaginator!
+  refund(id: ID!): Refund!
+  refunds(customer_id: Int, first: Int = 15, orderBy: String, order_id: Int, page: Int = 1, shop_id: Int, sortedBy: String): RefundPaginator!
+  settings: Setting!
+  shippingClass(id: ID!): Shipping!
+  shippingClasses(orderBy: [QueryShippingClassesOrderByOrderByClause!], text: String): [Shipping!]!
+  shop(id: ID, slug: String): Shop
+  shops(first: Int = 15, is_active: Boolean, orderBy: String, page: Int = 1, sortedBy: String, text: String): ShopPaginator!
+  staffs(first: Int = 15, orderBy: String, page: Int = 1, shop_id: ID, sortedBy: String): UserPaginator!
+  tag(id: ID, slug: String): Tag
+  tags(first: Int = 15, hasType: QueryTagsHasTypeWhereHasConditions, name: String, orderBy: [QueryTagsOrderByOrderByClause!], page: Int = 1, text: String): TagPaginator!
+  taxClass(id: ID!): Tax!
+  taxClasses(orderBy: [QueryTaxClassesOrderByOrderByClause!], text: String): [Tax!]!
+  type(id: ID, slug: String): Type!
+  types(orderBy: [QueryTypesOrderByOrderByClause!], text: String): [Type!]!
+  user(id: ID!): User
+  users(first: Int = 15, orderBy: [QueryUsersOrderByOrderByClause!], page: Int = 1, text: String): UserPaginator!
+  withdraw(id: ID!): Withdraw
+  withdraws(first: Int = 15, orderBy: String, page: Int = 1, shop_id: ID, sortedBy: String, status: String): WithdrawPaginator!
+}
+
+enum QueryAttributesOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryAttributesOrderByOrderByClause {
+  column: QueryAttributesOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryCategoriesHasTypeColumn {
+  SLUG
+}
+
+input QueryCategoriesHasTypeWhereHasConditions {
+  AND: [QueryCategoriesHasTypeWhereHasConditions!]
+  HAS: QueryCategoriesHasTypeWhereHasConditionsRelation
+  OR: [QueryCategoriesHasTypeWhereHasConditions!]
+  column: QueryCategoriesHasTypeColumn!
+  operator: SQLOperator = EQ
+  value: String!
+}
+
+input QueryCategoriesHasTypeWhereHasConditionsRelation {
+  amount: Int = 1
+  condition: QueryCategoriesHasTypeWhereHasConditions!
+  operator: SQLOperator!
+  relation: String!
+}
+
+enum QueryCategoriesOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryCategoriesOrderByOrderByClause {
+  column: QueryCategoriesOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryCouponsOrderByColumn {
+  AMOUNT
+  CODE
+  CREATED_AT
+  UPDATED_AT
+}
+
+input QueryCouponsOrderByOrderByClause {
+  column: QueryCouponsOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryOrderStatusesOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryOrderStatusesOrderByOrderByClause {
+  column: QueryOrderStatusesOrderByColumn
+  order: SortOrder!
+}
+
+enum QueryProductsHasCategoriesColumn {
+  SLUG
+}
+
+input QueryProductsHasCategoriesWhereHasConditions {
+  AND: [QueryProductsHasCategoriesWhereHasConditions!]
+  HAS: QueryProductsHasCategoriesWhereHasConditionsRelation
+  OR: [QueryProductsHasCategoriesWhereHasConditions!]
+  column: QueryProductsHasCategoriesColumn!
+  operator: SQLOperator = EQ
+  value: String!
+}
+
+input QueryProductsHasCategoriesWhereHasConditionsRelation {
+  amount: Int = 1
+  condition: QueryProductsHasCategoriesWhereHasConditions!
+  operator: SQLOperator!
+  relation: String!
+}
+
+enum QueryProductsHasTypeColumn {
+  SLUG
+}
+
+input QueryProductsHasTypeWhereHasConditions {
+  AND: [QueryProductsHasTypeWhereHasConditions!]
+  HAS: QueryProductsHasTypeWhereHasConditionsRelation
+  OR: [QueryProductsHasTypeWhereHasConditions!]
+  column: QueryProductsHasTypeColumn!
+  operator: SQLOperator = EQ
+  value: String!
+}
+
+input QueryProductsHasTypeWhereHasConditionsRelation {
+  amount: Int = 1
+  condition: QueryProductsHasTypeWhereHasConditions!
+  operator: SQLOperator!
+  relation: String!
+}
+
+enum QueryProductsOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryProductsOrderByOrderByClause {
+  column: QueryProductsOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryShippingClassesOrderByColumn {
+  AMOUNT
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryShippingClassesOrderByOrderByClause {
+  column: QueryShippingClassesOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryTagsHasTypeColumn {
+  SLUG
+}
+
+input QueryTagsHasTypeWhereHasConditions {
+  AND: [QueryTagsHasTypeWhereHasConditions!]
+  HAS: QueryTagsHasTypeWhereHasConditionsRelation
+  OR: [QueryTagsHasTypeWhereHasConditions!]
+  column: QueryTagsHasTypeColumn!
+  operator: SQLOperator = EQ
+  value: String!
+}
+
+input QueryTagsHasTypeWhereHasConditionsRelation {
+  amount: Int = 1
+  condition: QueryTagsHasTypeWhereHasConditions!
+  operator: SQLOperator!
+  relation: String!
+}
+
+enum QueryTagsOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryTagsOrderByOrderByClause {
+  column: QueryTagsOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryTaxClassesOrderByColumn {
+  CREATED_AT
+  NAME
+  RATE
+  UPDATED_AT
+}
+
+input QueryTaxClassesOrderByOrderByClause {
+  column: QueryTaxClassesOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryTypesOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryTypesOrderByOrderByClause {
+  column: QueryTypesOrderByColumn!
+  order: SortOrder!
+}
+
+enum QueryUsersOrderByColumn {
+  CREATED_AT
+  NAME
+  UPDATED_AT
+}
+
+input QueryUsersOrderByOrderByClause {
+  column: QueryUsersOrderByColumn!
+  order: SortOrder!
+}
+
+type Refund {
+  amount: String!
+  created_at: DateTime!
+  customer: User
+  description: String!
+  id: ID!
+  images: [Attachment!]
+  order: Order
+  shop: Shop
+  status: RefundStatus
+  title: String!
+  updated_at: DateTime!
+}
+
+input RefundInputType {
+  amount: String!
+  customer: UserInputType
+  description: String!
+  images: [AttachmentInput!]
+  order: OrderInputType
+  shop: ShopInputType
+  status: RefundStatus
+  title: String!
+}
+
+type RefundPaginator {
+  data: [Refund!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+enum RefundStatus {
+  APPROVED
+  PENDING
+  PROCESSING
+  REJECTED
+}
+
+input RegisterInput {
+  email: String!
+  name: String!
+  password: String
+  permission: Permission = CUSTOMER
+}
+
+input ResetPasswordInput {
+  email: String!
+  password: String!
+  token: String!
+}
+
+enum SQLOperator {
+  EQ
+  GT
+  NEQ
+}
+
+type SeoSettings {
+  canonicalUrl: String
+  metaDescription: String
+  metaTags: String
+  metaTitle: String
+  ogDescription: String
+  ogImage: Attachment
+  ogTitle: String
+  twitterCardType: String
+  twitterHandle: String
+}
+
+input SeoSettingsInputType {
+  canonicalUrl: String
+  metaDescription: String
+  metaTags: String
+  metaTitle: String
+  ogDescription: String
+  ogImage: AttachmentInput
+  ogTitle: String
+  twitterCardType: String
+  twitterHandle: String
+}
+
+type Setting {
+  created_at: DateTime!
+  id: ID!
+  options: SettingsOptions!
+  updated_at: DateTime!
+}
+
+input SettingsInput {
+  options: SettingsOptionsInput!
+}
+
+type SettingsOptions {
+  contactDetails: ContactDetails!
+  currency: String!
+  currencyToWalletRatio: Int
+  deliveryTime: [DeliveryTime!]!
+  facebook: FacebookSettings
+  google: GoogleSettings
+  logo: Attachment!
+  minimumOrderAmount: Float!
+  seo: SeoSettings!
+  shippingClass: String!
+  signupPoints: Int
+  siteSubtitle: String!
+  siteTitle: String!
+  taxClass: String!
+}
+
+input SettingsOptionsInput {
+  contactDetails: ContactDetailsInputType
+  currency: String
+  currencyToWalletRatio: Int
+  deliveryTime: [DeliveryTimeInputType!]
+  facebook: FacebookSettingsInputType
+  google: GoogleSettingsInputType
+  logo: AttachmentInput
+  minimumOrderAmount: Float
+  seo: SeoSettingsInputType
+  shippingClass: String
+  signupPoints: Int
+  siteSubtitle: String
+  siteTitle: String
+  taxClass: String
+}
+
+type Shipping {
+  amount: Float!
+  created_at: DateTime!
+  id: ID!
+  is_global: Boolean!
+  name: String!
+  type: ShippingType!
+  updated_at: DateTime!
+}
+
+enum ShippingType {
+  FIXED
+  FREE
+  PERCENTAGE
+}
+
+type Shop {
+  address: UserAddress!
+  balance: Balance
+  cover_image: Attachment
+  created_at: DateTime!
+  description: String
+  id: ID!
+  is_active: Boolean!
+  logo: Attachment
+  name: String!
+  orders_count: Int!
+  owner: User!
+  owner_id: Int!
+  products_count: Int!
+  settings: ShopSettings
+  slug: String!
+  staffs: [User!]
+  updated_at: DateTime!
+}
+
+input ShopInputType {
+  address: UserAddressInputType!
+  balance: BalanceInputType
+  cover_image: AttachmentInput
+  description: String
+  is_active: Boolean!
+  logo: AttachmentInput
+  name: String!
+  orders_count: Int!
+  owner: UserInputType!
+  owner_id: Int!
+  products_count: Int!
+  settings: ShopSettingsInputType
+  slug: String!
+  staffs: [UserInputType!]
+}
+
+type ShopPaginator {
+  data: [Shop!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+type ShopSettings {
+  contact: String
+  location: Location
+  socials: [ShopSocials!]
+  website: String
+}
+
+input ShopSettingsInputType {
+  contact: String
+  location: LocationInputType
+  socials: [ShopSocialsInputType!]
+  website: String
+}
+
+type ShopSocials {
+  icon: String!
+  url: String!
+}
+
+input ShopSocialsInputType {
+  icon: String!
+  url: String!
+}
+
+type Social {
+  link: String!
+  type: String!
+}
+
+input SocialInputType {
+  link: String!
+  type: String!
+}
+
+input SocialLoginInput {
+  access_token: String!
+  provider: String!
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+type SuccessResponse {
+  message: String!
+  success: Boolean!
+}
+
+type Tag {
+  created_at: DateTime!
+  details: String
+  icon: String
+  id: ID!
+  image: Attachment
+  name: String!
+  parent: Int
+  products: [Product!]
+  slug: String!
+  type: Type
+  updated_at: DateTime!
+}
+
+input TagInputType {
+  details: String
+  icon: String
+  image: AttachmentInput
+  name: String!
+  parent: Int
+  products: [ProductInputType!]
+  slug: String!
+  type: TypeInputType
+}
+
+type TagPaginator {
+  data: [Tag!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+type Tax {
+  city: String
+  country: String
+  created_at: DateTime!
+  id: ID!
+  is_global: Boolean!
+  name: String!
+  on_shipping: Boolean
+  priority: Int
+  rate: Float!
+  state: String
+  updated_at: DateTime!
+  zip: String
+}
+
+type TotalYearSaleByMonth {
+  month: String
+  total: Float
+}
+
+type Type {
+  banners: [Banner!]
+  created_at: DateTime!
+  icon: String!
+  id: ID!
+  image: Attachment!
+  name: String!
+  promotional_sliders: [Attachment!]
+  settings: TypeSettings
+  slug: String!
+  updated_at: DateTime!
+}
+
+input TypeInputType {
+  banners: [BannerInputType!]
+  icon: String!
+  image: AttachmentInput!
+  name: String!
+  promotional_sliders: [AttachmentInput!]
+  settings: TypeSettingsInputType
+  slug: String!
+}
+
+type TypeSettings {
+  isHome: Boolean!
+  layoutType: String!
+  productCard: String!
+}
+
+input TypeSettingsInputType {
+  isHome: Boolean!
+  layoutType: String!
+  productCard: String!
+}
+
+input UpdateAddressInput {
+  address: UserAddressInputType
+  customer: UserInputType
+  default: Boolean
+  id: ID!
+  title: String
+  type: AddressType
+}
+
+input UpdateAttributeInput {
+  id: ID!
+  name: String
+  shop_id: Int
+  values: [AttributeValueInput!]
+}
+
+input UpdateCategoryInput {
+  details: String
+  icon: String
+  id: ID!
+  image: AttachmentInput
+  name: String
+  parent: Int
+  type: ConnectTypeBelongsTo
+}
+
+input UpdateCouponInput {
+  active_from: String
+  amount: Float
+  code: String
+  description: String
+  expire_at: String
+  id: ID!
+  image: AttachmentInput
+  type: CouponType
+}
+
+input UpdateOrderInput {
+  amount: Float
+  billing_address: UserAddressInput
+  card: CardInput
+  coupon_id: ID
+  customer_contact: String
+  delivery_fee: Float
+  delivery_time: String
+  discount: Float
+  id: ID!
+  paid_total: Float
+  payment_gateway: PaymentGatewayType
+  payment_id: String
+  products: [ConnectProductOrderPivot!]
+  sales_tax: Float
+  shipping_address: UserAddressInput
+  shop_id: ID
+  status: String
+  total: Float
+  use_wallet_points: Boolean
+}
+
+input UpdateOrderStatusInput {
+  color: String
+  id: ID!
+  name: String
+  serial: Int
+}
+
+input UpdateProductInput {
+  categories: [ID!]
+  description: String
+  gallery: [AttachmentInput!]
+  height: String
+  id: ID!
+  image: AttachmentInput
+  in_stock: Boolean
+  is_taxable: Boolean
+  length: String
+  max_price: Float
+  min_price: Float
+  name: String
+  price: Float
+  product_type: ProductType
+  quantity: Int
+  sale_price: Float
+  shop_id: Int
+  sku: String
+  status: ProductStatus
+  tags: [ID!]
+  type_id: Int
+  unit: String
+  variation_options: UpsertVariationsHasMany
+  variations: [AttributeValueInputType!]
+  width: String
+}
+
+input UpdateRefundInput {
+  id: ID!
+  status: RefundStatus!
+}
+
+input UpdateShippingInput {
+  amount: Float
+  id: ID!
+  is_global: Boolean = true
+  name: String
+  type: ShippingType
+}
+
+input UpdateShopInput {
+  address: UserAddressInputType
+  balance: BalanceInput
+  categories: [ID!]
+  cover_image: AttachmentInput
+  description: String
+  id: ID!
+  logo: AttachmentInput
+  name: String
+  settings: ShopSettingsInputType
+}
+
+input UpdateTagInput {
+  details: String
+  icon: String
+  id: ID!
+  image: AttachmentInput
+  name: String
+  type: ConnectTypeBelongsTo
+}
+
+input UpdateTaxInput {
+  city: String
+  country: String
+  id: ID!
+  is_global: Boolean = true
+  name: String
+  on_shipping: Boolean
+  priority: Int
+  rate: Float
+  state: String
+  zip: String
+}
+
+input UpdateTypeInput {
+  banners: [BannerInputType!]
+  icon: String
+  id: ID!
+  name: String
+  promotional_sliders: [AttachmentInput!]
+  settings: TypeSettingsInputType
+}
+
+input UpdateUserInput {
+  email: String
+  id: ID!
+  name: String
+  password: String
+  permission: Permission = CUSTOMER
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UpsertVariationsHasMany {
+  delete: [ID!]
+  upsert: [VariationInput!]
+}
+
+type User {
+  address: [Address!]
+  created_at: DateTime!
+  email: String!
+  id: ID!
+  is_active: Boolean
+  managed_shop: Shop
+  name: String!
+  orders: [Order!]
+  password: String
+  profile: Profile
+  refunds: [Refund!]
+  shop_id: Float
+  shops: [Shop!]
+  updated_at: DateTime!
+  wallet: Wallet
+}
+
+type UserAddress {
+  city: String!
+  country: String!
+  state: String!
+  street_address: String!
+  zip: String!
+}
+
+input UserAddressInput {
+  city: String!
+  country: String!
+  state: String!
+  street_address: String!
+  zip: String!
+}
+
+input UserAddressInputType {
+  city: String!
+  country: String!
+  state: String!
+  street_address: String!
+  zip: String!
+}
+
+input UserInputType {
+  address: [AddressInputType!]
+  email: String!
+  is_active: Boolean = true
+  managed_shop: ShopInputType
+  name: String!
+  orders: [OrderInputType!]
+  password: String
+  profile: ProfileInputType
+  refunds: [RefundInputType!]
+  shop_id: Float
+  shops: [ShopInputType!]
+  wallet: WalletInputType
+}
+
+type UserPaginator {
+  data: [User!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+type Variation {
+  id: ID!
+  is_disable: Boolean!
+  options: [VariationOption!]!
+  price: Float!
+  quantity: Int!
+  sale_price: Float
+  sku: String!
+  title: String!
+}
+
+input VariationInput {
+  id: ID!
+  is_disable: Boolean!
+  options: [VariationOptionInputType!]!
+  price: Float!
+  quantity: Int!
+  sale_price: Float
+  sku: String!
+  title: String!
+}
+
+input VariationInputType {
+  id: ID!
+  is_disable: Boolean!
+  options: [VariationOptionInputType!]!
+  price: Float!
+  quantity: Int!
+  sale_price: Float
+  sku: String!
+  title: String!
+}
+
+type VariationOption {
+  name: String!
+  value: String!
+}
+
+input VariationOptionInputType {
+  name: String!
+  value: String!
+}
+
+type VerifiedCheckoutData {
+  shipping_charge: Float!
+  total_tax: Float!
+  unavailable_products: [ID!]!
+  wallet_amount: Int!
+  wallet_currency: Float!
+}
+
+type VerifyCouponResponse {
+  coupon: Coupon!
+  is_valid: Boolean!
+}
+
+input VerifyForgetPasswordTokenInput {
+  email: String!
+  token: String!
+}
+
+input VerifyOtpInput {
+  code: String!
+  otp_id: String!
+  phone_number: String!
+}
+
+type Wallet {
+  available_points: Int!
+  created_at: DateTime!
+  id: ID!
+  points_used: Int!
+  total_points: Int!
+  updated_at: DateTime!
+}
+
+input WalletInputType {
+  available_points: Int!
+  points_used: Int!
+  total_points: Int!
+}
+
+type WalletPoint {
+  amount: Float!
+  id: ID!
+}
+
+input WalletPointInputType {
+  amount: Float!
+  id: ID!
+}
+
+type Withdraw {
+  amount: Float!
+  created_at: DateTime!
+  details: String!
+  id: ID!
+  note: String!
+  payment_method: String!
+  shop: Shop
+  shop_id: Int!
+  status: WithdrawStatus
+  updated_at: DateTime!
+}
+
+type WithdrawPaginator {
+  data: [Withdraw!]!
+  paginatorInfo: PaginatorInfo!
+}
+
+enum WithdrawStatus {
+  APPROVED
+  ON_HOLD
+  PENDING
+  PROCESSING
+  REJECTED
+}

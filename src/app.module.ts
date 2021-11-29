@@ -1,5 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { join } from 'path';
+
+import appConfig from './config/app.config';
+import appSchema from './config/app.schema';
+
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -23,9 +29,34 @@ import { RefundsModule } from './modules/refunds/refunds.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot({
-      autoSchemaFile: true,
+    // config
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig],
+      validationSchema: appSchema,
     }),
+
+    // graphql
+    GraphQLModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          autoSchemaFile: join(process.cwd(), 'schema.gql'),
+          sortSchema: true,
+          introspection: true,
+          installSubscriptionHandlers: true,
+          playground:
+            configService.get<string>('config.environment') === 'local',
+          formatError: (error) => {
+            console.error(error);
+            return error;
+          },
+        };
+      },
+    }),
+
+    // modules
     UsersModule,
     ProductsModule,
     OrdersModule,
