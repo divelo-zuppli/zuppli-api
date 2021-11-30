@@ -203,9 +203,20 @@ type CategoryPaginator {
   paginatorInfo: PaginatorInfo!
 }
 
-input ChangePasswordInput {
+input ChangeUserEmailInput {
+  authUid: String!
+  email: String!
+}
+
+input ChangeUserPasswordInput {
+  authUid: String!
   newPassword: String!
   oldPassword: String!
+}
+
+input ChangeUserPhoneInput {
+  authUid: String!
+  phoneNumber: String!
 }
 
 input CheckoutVerificationInput {
@@ -436,6 +447,13 @@ input CreateTypeInput {
   settings: TypeSettingsInputType
 }
 
+input CreateUserFromAuthUidInput {
+  authUid: String!
+  email: String!
+  fullName: String
+  phoneNumber: String
+}
+
 input CreateUserInput {
   email: String!
   fullName: String
@@ -482,6 +500,10 @@ input ForgetPasswordInput {
   email: String!
 }
 
+input GetOneUserInput {
+  authUid: String!
+}
+
 type GoogleSettings {
   isEnable: Boolean!
   tagManagerId: String!
@@ -524,7 +546,9 @@ type Mutation {
   approveShop(input: ApproveShopInput!): Shop!
   approveWithdraw(input: ApproveWithdrawInput!): Withdraw!
   banUser(id: ID!): OldUser!
-  changePassword(input: ChangePasswordInput!): PasswordChangeResponse!
+  changeUserEmail(changeUserEmailInput: ChangeUserEmailInput!): User!
+  changeUserPassword(changeUserPasswordInput: ChangeUserPasswordInput!): User!
+  changeUserPhone(changeUserPhoneInput: ChangeUserPhoneInput!): User!
   contactUs(input: ContactInput): ContactResponse!
   createAddress(input: CreateAddressInput!): Address!
   createAttribute(input: CreateAttributeInput!): Attribute!
@@ -541,6 +565,7 @@ type Mutation {
   createTax(input: CreateTaxInput!): Tax!
   createType(input: CreateTypeInput!): Type!
   createUser(createUserInput: CreateUserInput!): User!
+  createUserFromAuthUid(createUserFromAuthUidInput: CreateUserFromAuthUidInput!): User!
   createWithdraw(input: CreateWithdrawInput!): Withdraw!
   deleteAddress(id: ID!): Address!
   deleteAttribute(id: ID!): Attribute!
@@ -570,6 +595,7 @@ type Mutation {
   removeUser(id: ID!): OldUser!
   resetPassword(input: ResetPasswordInput!): PasswordChangeResponse!
   sendOtpCode(input: OtpInput!): OtpResponse!
+  sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   socialLogin(input: SocialLoginInput!): AuthResponse!
   updateAddress(input: UpdateAddressInput!): Address!
   updateAttribute(input: UpdateAttributeInput!): Attribute!
@@ -890,6 +916,7 @@ type Query {
   category(id: ID, slug: String): Category!
   coupon(code: String, id: ID): Coupon!
   coupons(first: Int = 15, orderBy: [QueryCouponsOrderByOrderByClause!], page: Int = 1, text: String): CouponPaginator!
+  getUser(getOneUserInput: GetOneUserInput!): User!
   me: OldUser!
   order(id: ID, tracking_number: String): Order!
   orderStatus(id: ID!): OrderStatus!
@@ -1165,6 +1192,10 @@ enum SQLOperator {
   EQ
   GT
   NEQ
+}
+
+input SendUserResetPasswordEmail {
+  email: String!
 }
 
 type SeoSettings {
@@ -1714,6 +1745,10 @@ input VerifyOtpInput {
   code: String!
   otp_id: String!
   phone_number: String!
+}
+
+type VoidOutput {
+  message: String!
 }
 
 type Wallet {

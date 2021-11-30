@@ -1,5 +1,10 @@
 import Fuse from 'fuse.js';
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
 import { BasicAclService } from 'nestjs-basic-acl-sdk';
@@ -27,6 +32,13 @@ import { PrismaService } from '../../prisma.service';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { ParameterService } from '../parameter/parameter.service';
+import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid-input.dto';
+import { SendUserResetPasswordEmail } from './dto/send-user-reset-password-email-input.dto';
+import { VoidOutput } from './dto/void-output.dto';
+import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
+import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
+import { ChangeUserPhoneInput } from './dto/change-user-phone-input.dto';
+import { GetOneUserInput } from './dto/get-one-user-input.dto';
 
 const users = plainToClass(OldUser, usersJson);
 const options = {
@@ -65,14 +77,6 @@ export class UsersService {
     return {
       token: 'jwt token',
       permissions: ['super_admin', 'customer'],
-    };
-  }
-  async changePassword(
-    changePasswordInput: ChangePasswordInput,
-  ): Promise<PasswordChangeResponse> {
-    return {
-      success: true,
-      message: 'Password change successful',
     };
   }
   async forgetPassword(
@@ -190,5 +194,165 @@ export class UsersService {
         authUid: aclUser.authUid,
       });
     }
+  }
+
+  public async createFromAuthUid(
+    createUserFromAuthUidInput: CreateUserFromAuthUidInput,
+  ): Promise<User> {
+    const {
+      authUid,
+      email,
+      fullName = 'No assigned',
+      phoneNumber,
+    } = createUserFromAuthUidInput;
+
+    const existingByAuthUid = await this.prismaService.user.findUnique({
+      where: { authUid },
+    });
+
+    if (existingByAuthUid) {
+      throw new ConflictException(
+        `the user with authUid ${authUid} already exist.`,
+      );
+    }
+
+    const roleCode = await this.parameterService.getValue({
+      name: 'BASIC_ACL_CUSTOMER_ROLE_CODE',
+    });
+
+    const aclUser = await this.basicAclService.createUser({
+      authUid,
+      roleCode,
+      sendEmail: true,
+      emailTemplateParams: {
+        fullName,
+      },
+    });
+
+    try {
+      const { authUid } = aclUser;
+
+      const created = this.prismaService.user.create({
+        data: {
+          authUid,
+          email,
+          phoneNumber,
+          fullName,
+        },
+      });
+
+      return created;
+    } catch (error) {
+      await this.basicAclService.deleteUser({
+        authUid: aclUser.authUid,
+      });
+
+      throw error;
+    }
+  }
+
+  public async getOne(input: GetOneUserInput): Promise<User> {
+    const { authUid } = input;
+
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { authUid },
+    });
+
+    return existingUser;
+  }
+
+  public async sendResetPasswordEmail(
+    input: SendUserResetPasswordEmail,
+  ): Promise<VoidOutput> {
+    const { email } = input;
+
+    await this.basicAclService.sendResetPasswordEmail({
+      email,
+    });
+
+    return {
+      message: 'email message was sent',
+    };
+  }
+
+  public async changePassword(input: ChangeUserPasswordInput): Promise<User> {
+    const { authUid } = input;
+
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { authUid },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException(`user with authUid ${authUid} not found.`);
+    }
+
+    const { oldPassword, newPassword } = input;
+
+    await this.basicAclService.changePassword({
+      authUid: existingUser.authUid,
+      oldPassword,
+      newPassword,
+      emailTemplateParams: {
+        fullName: existingUser.fullName,
+      },
+    });
+
+    return existingUser;
+  }
+
+  public async changeEmail(input: ChangeUserEmailInput): Promise<User> {
+    const { authUid } = input;
+
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { authUid },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException(`user with authUid ${authUid} not found.`);
+    }
+
+    const { email } = input;
+
+    await this.basicAclService.changeEmail({
+      authUid: existingUser.authUid,
+      email,
+      emailTemplateParams: {
+        fullName: existingUser.fullName,
+      },
+    });
+
+    const updatedUser = await this.prismaService.user.update({
+      data: { email },
+      where: { authUid },
+    });
+
+    return updatedUser;
+  }
+
+  public async changePhone(input: ChangeUserPhoneInput): Promise<User> {
+    const { authUid } = input;
+
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { authUid },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException(`user with authUid ${authUid} not found.`);
+    }
+
+    const { phoneNumber } = input;
+
+    // change the phone in the ACL
+    await this.basicAclService.changePhone({
+      authUid: existingUser.authUid,
+      phone: `+57${phoneNumber}`,
+    });
+
+    const updatedUser = await this.prismaService.user.update({
+      data: { phoneNumber },
+      where: { authUid },
+    });
+
+    return updatedUser;
   }
 }
