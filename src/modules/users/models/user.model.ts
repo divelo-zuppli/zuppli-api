@@ -15,7 +15,7 @@ export class User implements UserType {
   @Field()
   email: string;
 
-  @Field()
+  @Field({ nullable: true })
   phoneNumber: string;
 
   @Field({ nullable: true })

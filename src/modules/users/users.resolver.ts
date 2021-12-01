@@ -36,7 +36,7 @@ import { VoidOutput } from './dto/void-output.dto';
 import { SendUserResetPasswordEmail } from './dto/send-user-reset-password-email-input.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
-import { ChangeUserPhoneInput } from './dto/change-user-phone-input.dto';
+import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -217,10 +217,10 @@ export class UsersResolver {
     return this.service.changeEmail(input);
   }
 
-  @Mutation(() => User, { name: 'changeUserPhone' })
-  changePhone(
-    @Args('changeUserPhoneInput') input: ChangeUserPhoneInput,
+  @Mutation(() => User, { name: 'changeUserPhoneNumber' })
+  changePhoneNumber(
+    @Args('changeUserPhoneNumberInput') input: ChangeUserPhoneNumberInput,
   ): Promise<User> {
-    return this.service.changePhone(input);
+    return this.service.changePhoneNumber(input);
   }
 }

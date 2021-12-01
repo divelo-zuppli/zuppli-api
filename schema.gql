@@ -214,7 +214,7 @@ input ChangeUserPasswordInput {
   oldPassword: String!
 }
 
-input ChangeUserPhoneInput {
+input ChangeUserPhoneNumberInput {
   authUid: String!
   phoneNumber: String!
 }
@@ -548,7 +548,7 @@ type Mutation {
   banUser(id: ID!): OldUser!
   changeUserEmail(changeUserEmailInput: ChangeUserEmailInput!): User!
   changeUserPassword(changeUserPasswordInput: ChangeUserPasswordInput!): User!
-  changeUserPhone(changeUserPhoneInput: ChangeUserPhoneInput!): User!
+  changeUserPhoneNumber(changeUserPhoneNumberInput: ChangeUserPhoneNumberInput!): User!
   contactUs(input: ContactInput): ContactResponse!
   createAddress(input: CreateAddressInput!): Address!
   createAttribute(input: CreateAttributeInput!): Attribute!
@@ -1631,7 +1631,7 @@ type User {
   email: String!
   fullName: String
   id: Float!
-  phoneNumber: String!
+  phoneNumber: String
   uid: String!
   updatedAt: DateTime!
 }

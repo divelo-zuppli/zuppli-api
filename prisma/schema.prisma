@@ -16,7 +16,7 @@ model User {
   id          Int    @id @default(autoincrement())
   uid         String @unique @default(cuid())
   email       String @unique @db.VarChar(100)
-  phoneNumber String @unique @map("phone_number") @db.VarChar(10)
+  phoneNumber String? @unique @map("phone_number") @db.VarChar(10)
   authUid     String @unique @map("auth_uid") @db.VarChar(100)
   fullName    String? @map("full_name") @db.VarChar(100)
 

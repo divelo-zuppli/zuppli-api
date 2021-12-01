@@ -4,6 +4,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  NotImplementedException,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
@@ -37,7 +38,7 @@ import { SendUserResetPasswordEmail } from './dto/send-user-reset-password-email
 import { VoidOutput } from './dto/void-output.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
-import { ChangeUserPhoneInput } from './dto/change-user-phone-input.dto';
+import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 
 const users = plainToClass(OldUser, usersJson);
@@ -211,6 +212,7 @@ export class UsersService {
     });
 
     if (existingByAuthUid) {
+      console.log('already exists');
       throw new ConflictException(
         `the user with authUid ${authUid} already exist.`,
       );
@@ -223,6 +225,7 @@ export class UsersService {
     const aclUser = await this.basicAclService.createUser({
       authUid,
       roleCode,
+      phone: `+57${phoneNumber}`,
       sendEmail: true,
       emailTemplateParams: {
         fullName,
@@ -232,7 +235,7 @@ export class UsersService {
     try {
       const { authUid } = aclUser;
 
-      const created = this.prismaService.user.create({
+      const created = await this.prismaService.user.create({
         data: {
           authUid,
           email,
@@ -243,6 +246,8 @@ export class UsersService {
 
       return created;
     } catch (error) {
+      Logger.warn('deleting the user in ACL', UsersService.name);
+
       await this.basicAclService.deleteUser({
         authUid: aclUser.authUid,
       });
@@ -329,7 +334,9 @@ export class UsersService {
     return updatedUser;
   }
 
-  public async changePhone(input: ChangeUserPhoneInput): Promise<User> {
+  public async changePhoneNumber(
+    input: ChangeUserPhoneNumberInput,
+  ): Promise<User> {
     const { authUid } = input;
 
     const existingUser = await this.prismaService.user.findUnique({
