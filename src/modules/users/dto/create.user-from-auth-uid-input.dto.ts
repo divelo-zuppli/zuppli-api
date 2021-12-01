@@ -11,6 +11,7 @@ export class CreateUserFromAuthUidInput {
   @Field(() => String)
   readonly email: string;
 
+  @IsOptional()
   @Length(5, 160)
   @IsString()
   @Field(() => String, { nullable: true })
