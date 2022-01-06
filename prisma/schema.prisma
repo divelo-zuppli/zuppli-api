@@ -40,11 +40,47 @@ model Attachment {
   id      Int    @id @default(autoincrement())
   uid     String @unique @default(cuid())
   url     String @db.VarChar(250)
-  cloudId String @db.VarChar(50)
+  cloudId String @db.VarChar(50) @map("cloud_id")
   type    String @db.VarChar(50)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
+  // relations
+  categories CategoryAttachment[]
+
   @@map("attachment")
+}
+
+model Category {
+  id       Int    @id @default(autoincrement())
+  uid      String @unique @default(cuid())
+  name     String @db.VarChar(100)
+  slug     String @db.VarChar(100)
+  parentId Int?   @map("parent_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  // relations
+  parent   Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryChildren")
+
+  attachments CategoryAttachment[]
+
+  @@map("category")
+}
+
+model CategoryAttachment {
+  categoryId   Int @map("category_id")
+  attachmentId Int  @map("attachment_id")
+
+  category   Category   @relation(fields: [categoryId], references: [id])
+  attachment Attachment @relation(fields: [attachmentId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([categoryId, attachmentId])
+
+  @@map("category_attachment")
 }
