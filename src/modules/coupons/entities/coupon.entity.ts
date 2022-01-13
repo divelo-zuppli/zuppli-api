@@ -1,5 +1,4 @@
 import { InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 
@@ -19,7 +18,6 @@ export class Coupon extends CoreEntity {
   description?: string;
   orders?: Order[];
   type: CouponType;
-  image?: Attachment;
   is_valid: boolean;
   amount: number;
   active_from: string;

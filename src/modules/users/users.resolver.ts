@@ -175,9 +175,7 @@ export class UsersResolver {
 
   @Public()
   @Mutation(() => User, { name: 'createUser' })
-  public create(
-    @Args('createUserInput') input: CreateUserInput,
-  ): Promise<User> {
+  create(@Args('createUserInput') input: CreateUserInput): Promise<User> {
     return this.service.create(input);
   }
 

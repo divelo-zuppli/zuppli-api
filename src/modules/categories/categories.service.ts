@@ -1,59 +1,420 @@
-import { Injectable } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { CreateCategoryInput } from './dto/create-category.input';
-import { UpdateCategoryInput } from './dto/update-category.input';
-import Fuse from 'fuse.js';
-import categoriesJson from './categories.json';
-import { Category } from './entities/category.entity';
-import { paginate } from 'src/common/pagination/paginate';
-import { GetCategoriesArgs } from './dto/get-categories.args';
-import { GetCategoryArgs } from './dto/get-category.args';
+import * as fs from 'fs';
+import * as path from 'path';
 
-const categories = plainToClass(Category, categoriesJson);
-const options = {
-  keys: ['name', 'type.slug'],
-  threshold: 0.3,
-};
-const fuse = new Fuse(categories, options);
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { FileUpload } from 'graphql-upload';
+import { nanoid } from 'nanoid';
+import { v2 as cloudinary } from 'cloudinary';
+import { ConfigType } from '@nestjs/config';
+
+import { Category } from './models/category.model';
+import { Attachment } from '../attachment/models/attachment.model';
+
+import { PrismaService } from '../../prisma.service';
+
+import appConfig from '../../config/app.config';
+
+import { createFileFromReadStream } from '../../utils';
+
+import { CreateCategoryInput } from './dto/create-category-input.dto';
+import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
+import { UpdateCategoryInput } from './dto/update-category-input.dto';
+
 @Injectable()
 export class CategoriesService {
-  private categories: Category[] = categories;
-  create(createCategoryInput: CreateCategoryInput) {
-    return this.categories[0];
+  constructor(
+    @Inject(appConfig.KEY)
+    private readonly appConfiguration: ConfigType<typeof appConfig>,
+    private readonly prismaService: PrismaService,
+  ) {
+    cloudinary.config({
+      cloud_name: this.appConfiguration.cloudinary.cloudName,
+      api_key: this.appConfiguration.cloudinary.apiKey,
+      api_secret: this.appConfiguration.cloudinary.apiSecret,
+    });
   }
 
-  getCategories({ text, first, page, hasType, parent }: GetCategoriesArgs) {
-    const startIndex = (page - 1) * first;
-    const endIndex = page * first;
-    let data: Category[] = this.categories;
-    if (text?.replace(/%/g, '')) {
-      data = fuse.search(text)?.map(({ item }) => item);
+  /* CRUD LOGIC */
+
+  public async create(input: CreateCategoryInput): Promise<Category> {
+    const { name } = input;
+
+    const exisingCategoryByName = await this.prismaService.category.findFirst({
+      where: { name },
+    });
+
+    if (exisingCategoryByName) {
+      throw new ConflictException(
+        `already exist an category with the name ${name}.`,
+      );
     }
-    if (hasType?.value) {
-      data = fuse.search(hasType.value as unknown)?.map(({ item }) => item);
+
+    const { parentUid } = input;
+
+    let exisingCategoryByParentUid;
+
+    if (parentUid) {
+      exisingCategoryByParentUid = await this.prismaService.category.findUnique(
+        {
+          where: { uid: parentUid },
+        },
+      );
+
+      if (!exisingCategoryByParentUid) {
+        throw new ConflictException(
+          `can't get category with the uid ${parentUid}.`,
+        );
+      }
     }
-    if (parent === null) {
-      data = data.filter(({ parent: parentValue }) => parentValue === null);
-    }
-    const results = data.slice(startIndex, endIndex);
+
+    const created = await this.prismaService.category.create({
+      data: {
+        name,
+        slug: name.replace(/\s/g, '-').toLowerCase(),
+        parentId: exisingCategoryByParentUid?.id,
+      },
+    });
+
     return {
-      data: results,
-      paginatorInfo: paginate(data.length, page, first, results.length),
-    };
+      ...created,
+      parent: exisingCategoryByParentUid,
+    } as any;
   }
 
-  getCategory({ id, slug }: GetCategoryArgs): Category {
-    if (id) {
-      return this.categories.find((p) => p.id === Number(id));
+  public async getOne(getOneCategoryInput: GetOneCategoryInput) {
+    const { uid } = getOneCategoryInput;
+
+    const category = await this.prismaService.category.findUnique({
+      where: { uid },
+      include: {
+        parent: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return category as any;
+  }
+
+  public async update(
+    getOneCategoryInput: GetOneCategoryInput,
+    input: UpdateCategoryInput,
+  ): Promise<Category> {
+    const { uid } = getOneCategoryInput;
+
+    const category = await this.getOne(getOneCategoryInput);
+
+    if (!category) {
+      throw new NotFoundException(`can't get category with the uid ${uid}.`);
     }
-    return this.categories.find((p) => p.slug === slug);
+
+    const { name } = input;
+
+    // check if the name is already taken
+    if (name) {
+      const exisingCategoryByName = await this.prismaService.category.findFirst(
+        {
+          where: { name },
+        },
+      );
+
+      if (exisingCategoryByName && exisingCategoryByName.id !== category.id) {
+        throw new ConflictException(
+          `already exist an category with the name ${name}.`,
+        );
+      }
+    }
+
+    const { parentUid } = input;
+
+    // try to get the parent category
+    let exisingCategoryByParentUid;
+
+    if (parentUid) {
+      exisingCategoryByParentUid = await this.prismaService.category.findUnique(
+        {
+          where: { uid: parentUid },
+        },
+      );
+
+      if (!exisingCategoryByParentUid) {
+        throw new ConflictException(
+          `can't get category with the uid ${parentUid}.`,
+        );
+      }
+    }
+
+    // update the category
+    const updated = await this.prismaService.category.update({
+      where: {
+        id: category.id,
+      },
+      data: {
+        name,
+        slug: name?.replace(/\s/g, '-').toLowerCase(),
+        parentId: exisingCategoryByParentUid?.id,
+        updatedAt: new Date(),
+      },
+      include: {
+        parent: true,
+      },
+    });
+
+    return {
+      ...category,
+      ...updated,
+    } as any;
   }
 
-  update(id: number, updateCategoryInput: UpdateCategoryInput) {
-    return this.categories[0];
+  public async delete(getOneCategoryInput: GetOneCategoryInput) {
+    const { uid } = getOneCategoryInput;
+
+    const category = await this.getOne(getOneCategoryInput);
+
+    if (!category) {
+      throw new NotFoundException(`can't get category with the uid ${uid}.`);
+    }
+
+    const { children, attachments } =
+      await this.prismaService.category.findUnique({
+        where: {
+          uid,
+        },
+        include: {
+          children: true,
+          attachments: {
+            include: {
+              attachment: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    if (children.length) {
+      throw new ConflictException(`can't delete category with children.`);
+    }
+
+    // delete the category_attachment
+    await this.prismaService.categoryAttachment.deleteMany({
+      where: {
+        categoryId: category.id,
+      },
+    });
+
+    // delete the attachments
+    await this.prismaService.attachment.deleteMany({
+      where: {
+        id: {
+          in: attachments.map(({ attachment }) => attachment.id),
+        },
+      },
+    });
+
+    // delete the category
+    await this.prismaService.category.delete({
+      where: {
+        id: category.id,
+      },
+    });
+
+    return category as any;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  /* CRUD LOGIC */
+
+  /* RESOLVE FIELDS LOGIC */
+
+  public async getByIds(masterIds: number[]): Promise<Category[]> {
+    const categories = await this.prismaService.category.findMany({
+      where: {
+        id: {
+          in: masterIds,
+        },
+      },
+    });
+
+    return categories as any;
   }
+
+  public async children(parent: Category): Promise<Category[]> {
+    const { id } = parent;
+
+    const children = await this.prismaService.category.findMany({
+      where: {
+        parentId: {
+          equals: id,
+        },
+      },
+      include: {
+        parent: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return children as any;
+  }
+
+  public async attatchments(parent: Category): Promise<Attachment[]> {
+    const { id } = parent;
+
+    const { attachments } = await this.prismaService.category.findUnique({
+      where: { id },
+      include: {
+        attachments: {
+          include: {
+            attachment: true,
+          },
+        },
+      },
+    });
+
+    return attachments.map(({ attachment }) => attachment);
+  }
+
+  /* RESOLVE FIELDS LOGIC */
+
+  /* EXTRA LOGIC */
+
+  public async uploadImage(
+    getOneCategoryInput: GetOneCategoryInput,
+    fileUpload: FileUpload,
+  ): Promise<Category> {
+    let filePath = '';
+
+    try {
+      const { uid } = getOneCategoryInput;
+
+      const category = await this.getOne(getOneCategoryInput);
+
+      if (!category) {
+        throw new NotFoundException(`can't get category with the uid ${uid}.`);
+      }
+
+      const { filename, mimetype } = fileUpload;
+
+      if (!mimetype.startsWith('image')) {
+        throw new BadRequestException('mimetype not allowed.');
+      }
+
+      const basePath = path.resolve(__dirname);
+
+      const fileExt = filename.split('.').pop();
+
+      const publicId = nanoid(6);
+
+      filePath = `${basePath}/${category.slug}_${publicId}.${fileExt}`;
+
+      const { createReadStream } = fileUpload;
+
+      const stream = createReadStream();
+
+      await createFileFromReadStream(stream, filePath);
+
+      let cloudinaryResponse;
+
+      try {
+        const folderName =
+          this.appConfiguration.environment === 'production'
+            ? 'categories'
+            : `${this.appConfiguration.environment}_categories`;
+
+        cloudinaryResponse = await cloudinary.uploader.upload(filePath, {
+          folder: folderName,
+          public_id: publicId,
+          quality: 'auto:best',
+        });
+      } catch (error) {
+        throw new InternalServerErrorException(error.message);
+      }
+
+      // create the attachment
+      const attachment = await this.prismaService.attachment.create({
+        data: {
+          cloudId: cloudinaryResponse.public_id,
+          type: 'category_image',
+          url: cloudinaryResponse.secure_url,
+        },
+      });
+
+      // create the category_attachment
+      await this.prismaService.categoryAttachment.create({
+        data: {
+          categoryId: category.id,
+          attachmentId: attachment.id,
+        },
+      });
+
+      return category as any;
+    } finally {
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+  }
+
+  public async deleteImage(getOneCategoryInput: GetOneCategoryInput) {
+    // get the category
+    const category = await this.getOne(getOneCategoryInput);
+
+    const attachments = await this.prismaService.categoryAttachment.findMany({
+      where: {
+        categoryId: category.id,
+      },
+      include: {
+        attachment: true,
+      },
+    });
+
+    if (!attachments.length) {
+      throw new NotFoundException(`the category doesn't have aattachments.`);
+    }
+
+    // get the attachment
+    const lastAttachment = attachments[attachments.length - 1];
+
+    // delete the file in cloudinary
+    try {
+      await cloudinary.uploader.destroy(lastAttachment.attachment.cloudId);
+    } catch (error) {
+      Logger.error(error.message, CategoriesService.name);
+    }
+
+    // delete the category_attachment
+    await this.prismaService.categoryAttachment.delete({
+      where: {
+        categoryId_attachmentId: {
+          categoryId: category.id,
+          attachmentId: lastAttachment.attachmentId,
+        },
+      },
+    });
+
+    // delete the attachment
+    await this.prismaService.attachment.delete({
+      where: {
+        id: lastAttachment.attachmentId,
+      },
+    });
+
+    return category as any;
+  }
+
+  /* EXTRA LOGIC */
 }

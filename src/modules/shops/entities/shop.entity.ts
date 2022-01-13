@@ -7,7 +7,6 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { UserAddress } from 'src/modules/addresses/entities/address.entity';
-import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import {
   Location,
@@ -31,8 +30,6 @@ export class Shop extends CoreEntity {
   name: string;
   slug: string;
   description?: string;
-  cover_image?: Attachment;
-  logo?: Attachment;
   address: UserAddress;
   settings?: ShopSettings;
 }

@@ -1,5 +1,4 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { Attachment } from 'src/common/entities/attachment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 
 @InputType('SettingInputType', { isAbstract: true })
@@ -20,7 +19,6 @@ export class SettingsOptions {
   @Field(() => Int)
   signupPoints?: number;
   deliveryTime: DeliveryTime[];
-  logo: Attachment;
   taxClass: string;
   shippingClass: string;
   seo: SeoSettings;
@@ -43,7 +41,6 @@ export class SeoSettings {
   metaDescription?: string;
   ogTitle?: string;
   ogDescription?: string;
-  ogImage?: Attachment;
   twitterHandle?: string;
   twitterCardType?: string;
   metaTags?: string;

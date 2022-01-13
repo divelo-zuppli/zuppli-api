@@ -15,5 +15,10 @@ export default registerAs('config', () => {
       companyUid: process.env.BASIC_ACL_COMPANY_UID,
       accessKey: process.env.BASIC_ACL_ACCESS_KEY,
     },
+    cloudinary: {
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      apiSecret: process.env.CLOUDINARY_API_SECRET,
+    },
   };
 });

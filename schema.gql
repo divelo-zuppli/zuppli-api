@@ -61,15 +61,13 @@ input ApproveWithdrawInput {
 }
 
 type Attachment {
-  id: ID
-  original: String
-  thumbnail: String
-}
-
-input AttachmentInput {
-  id: ID
-  original: String
-  thumbnail: String
+  cloudId: String!
+  createdAt: DateTime!
+  id: Float!
+  type: String!
+  uid: String!
+  updatedAt: DateTime!
+  url: String!
 }
 
 type Attribute {
@@ -148,14 +146,12 @@ type Banner {
   created_at: DateTime!
   description: String
   id: ID!
-  image: Attachment!
   title: String
   updated_at: DateTime!
 }
 
 input BannerInputType {
   description: String
-  image: AttachmentInput!
   title: String
 }
 
@@ -168,39 +164,15 @@ input CardInput {
 }
 
 type Category {
+  attatchments: [Attachment!]
   children: [Category!]
-  created_at: DateTime!
-  details: String
-  icon: String
-  id: ID!
-  image: Attachment
+  createdAt: DateTime!
+  id: Float!
   name: String!
   parent: Category
-  parent_id: ID
-  products: [Product!]
-  products_count: Int
   slug: String!
-  type: Type
-  updated_at: DateTime!
-}
-
-input CategoryInputType {
-  children: [CategoryInputType!]
-  details: String
-  icon: String
-  image: AttachmentInput
-  name: String!
-  parent: CategoryInputType
-  parent_id: ID
-  products: [ProductInputType!]
-  products_count: Int
-  slug: String!
-  type: TypeInputType
-}
-
-type CategoryPaginator {
-  data: [Category!]!
-  paginatorInfo: PaginatorInfo!
+  uid: String!
+  updatedAt: DateTime!
 }
 
 input ChangeUserEmailInput {
@@ -238,10 +210,6 @@ input ConnectProductOrderPivot {
   variation_option_id: ID
 }
 
-input ConnectTypeBelongsTo {
-  connect: ID!
-}
-
 type ContactDetails {
   contact: String!
   location: Location!
@@ -276,7 +244,6 @@ type Coupon {
   description: String
   expire_at: String!
   id: ID!
-  image: Attachment
   is_valid: Boolean!
   orders: [Order!]
   type: CouponType!
@@ -289,7 +256,6 @@ input CouponInputType {
   code: String!
   description: String
   expire_at: String!
-  image: AttachmentInput
   is_valid: Boolean!
   orders: [OrderInputType!]
   type: CouponType!
@@ -322,12 +288,8 @@ input CreateAttributeInput {
 }
 
 input CreateCategoryInput {
-  details: String
-  icon: String
-  image: AttachmentInput
   name: String!
-  parent: Int
-  type: ConnectTypeBelongsTo
+  parentUid: String
 }
 
 input CreateCouponInput {
@@ -336,7 +298,6 @@ input CreateCouponInput {
   code: String!
   description: String
   expire_at: String!
-  image: AttachmentInput
   type: CouponType!
 }
 
@@ -370,9 +331,7 @@ input CreateOrderStatusInput {
 input CreateProductInput {
   categories: [ID!]
   description: String!
-  gallery: [AttachmentInput!]
   height: String
-  image: AttachmentInput
   in_stock: Boolean!
   is_taxable: Boolean!
   length: String
@@ -396,7 +355,6 @@ input CreateProductInput {
 
 input CreateRefundInput {
   description: String!
-  images: [AttachmentInput!]
   order_id: ID!
   title: String!
 }
@@ -412,9 +370,7 @@ input CreateShopInput {
   address: UserAddressInputType!
   balance: BalanceInput
   categories: [ID!]
-  cover_image: AttachmentInput
   description: String
-  logo: AttachmentInput
   name: String!
   settings: ShopSettingsInputType
 }
@@ -422,9 +378,7 @@ input CreateShopInput {
 input CreateTagInput {
   details: String
   icon: String
-  image: AttachmentInput
   name: String!
-  type: ConnectTypeBelongsTo
 }
 
 input CreateTaxInput {
@@ -443,7 +397,6 @@ input CreateTypeInput {
   banners: [BannerInputType!]
   icon: String!
   name: String!
-  promotional_sliders: [AttachmentInput!]
   settings: TypeSettingsInputType
 }
 
@@ -500,6 +453,10 @@ input ForgetPasswordInput {
   email: String!
 }
 
+input GetOneCategoryInput {
+  uid: String!
+}
+
 input GetOneUserInput {
   authUid: String!
 }
@@ -552,7 +509,7 @@ type Mutation {
   contactUs(input: ContactInput): ContactResponse!
   createAddress(input: CreateAddressInput!): Address!
   createAttribute(input: CreateAttributeInput!): Attribute!
-  createCategory(input: CreateCategoryInput!): Category!
+  createCategory(createCategoryInput: CreateCategoryInput!): Category!
   createCoupon(input: CreateCouponInput!): Coupon!
   createOrder(input: CreateOrderInput!): Order!
   createOrderStatus(input: CreateOrderStatusInput!): OrderStatus!
@@ -569,7 +526,8 @@ type Mutation {
   createWithdraw(input: CreateWithdrawInput!): Withdraw!
   deleteAddress(id: ID!): Address!
   deleteAttribute(id: ID!): Attribute!
-  deleteCategory(id: ID!): Category!
+  deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
+  deleteCategoryImage(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteCoupon(id: ID!): Coupon!
   deleteOrder(id: ID!): Order!
   deleteOrderStatus(id: ID!): OrderStatus!
@@ -599,7 +557,7 @@ type Mutation {
   socialLogin(input: SocialLoginInput!): AuthResponse!
   updateAddress(input: UpdateAddressInput!): Address!
   updateAttribute(input: UpdateAttributeInput!): Attribute!
-  updateCategory(input: UpdateCategoryInput!): Category!
+  updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
   updateCoupon(input: UpdateCouponInput!): Coupon!
   updateOrder(input: UpdateOrderInput!): Order!
   updateOrderStatus(input: UpdateOrderStatusInput!): OrderStatus!
@@ -613,7 +571,7 @@ type Mutation {
   updateTax(input: UpdateTaxInput!): Tax!
   updateType(input: UpdateTypeInput!): Type!
   updateUser(input: UpdateUserInput!): OldUser!
-  upload(attachment: [Upload!]): [Attachment!]!
+  uploadCategoryImage(file: Upload!, getOneCategoryInput: GetOneCategoryInput!): Category!
   verifyCheckout(input: CheckoutVerificationInput!): VerifiedCheckoutData!
   verifyCoupon(code: String!): VerifyCouponResponse!
   verifyForgetPasswordToken(input: VerifyForgetPasswordTokenInput!): PasswordChangeResponse!
@@ -796,13 +754,10 @@ input PivotInputType {
 }
 
 type Product {
-  categories: [Category!]!
   created_at: DateTime!
   description: String!
-  gallery: [Attachment!]
   height: String
   id: ID!
-  image: Attachment
   in_stock: Boolean!
   is_taxable: Boolean!
   length: String
@@ -832,11 +787,8 @@ type Product {
 }
 
 input ProductInputType {
-  categories: [CategoryInputType!]!
   description: String!
-  gallery: [AttachmentInput!]
   height: String
-  image: AttachmentInput
   in_stock: Boolean!
   is_taxable: Boolean!
   length: String
@@ -880,7 +832,6 @@ enum ProductType {
 }
 
 type Profile {
-  avatar: Attachment
   bio: String
   contact: String
   created_at: DateTime!
@@ -891,7 +842,6 @@ type Profile {
 }
 
 input ProfileInput {
-  avatar: AttachmentInput
   bio: String
   contact: String
   customer: ConnectBelongsTo!
@@ -899,7 +849,6 @@ input ProfileInput {
 }
 
 input ProfileInputType {
-  avatar: AttachmentInput
   bio: String
   contact: String
   customer: UserInputType
@@ -912,10 +861,9 @@ type Query {
   analytics: Analytics!
   attribute(id: ID, slug: String): Attribute!
   attributes(orderBy: [QueryAttributesOrderByOrderByClause!], shop_id: ID): [Attribute!]!
-  categories(first: Int = 15, hasType: QueryCategoriesHasTypeWhereHasConditions, name: String, orderBy: [QueryCategoriesOrderByOrderByClause!], page: Int = 1, parent: ID = null, text: String): CategoryPaginator!
-  category(id: ID, slug: String): Category!
   coupon(code: String, id: ID): Coupon!
   coupons(first: Int = 15, orderBy: [QueryCouponsOrderByOrderByClause!], page: Int = 1, text: String): CouponPaginator!
+  getCategory(getOneCategoryInput: GetOneCategoryInput!): Category
   getUser(getOneUserInput: GetOneUserInput!): User!
   me: OldUser!
   order(id: ID, tracking_number: String): Order!
@@ -953,37 +901,6 @@ enum QueryAttributesOrderByColumn {
 
 input QueryAttributesOrderByOrderByClause {
   column: QueryAttributesOrderByColumn!
-  order: SortOrder!
-}
-
-enum QueryCategoriesHasTypeColumn {
-  SLUG
-}
-
-input QueryCategoriesHasTypeWhereHasConditions {
-  AND: [QueryCategoriesHasTypeWhereHasConditions!]
-  HAS: QueryCategoriesHasTypeWhereHasConditionsRelation
-  OR: [QueryCategoriesHasTypeWhereHasConditions!]
-  column: QueryCategoriesHasTypeColumn!
-  operator: SQLOperator = EQ
-  value: String!
-}
-
-input QueryCategoriesHasTypeWhereHasConditionsRelation {
-  amount: Int = 1
-  condition: QueryCategoriesHasTypeWhereHasConditions!
-  operator: SQLOperator!
-  relation: String!
-}
-
-enum QueryCategoriesOrderByColumn {
-  CREATED_AT
-  NAME
-  UPDATED_AT
-}
-
-input QueryCategoriesOrderByOrderByClause {
-  column: QueryCategoriesOrderByColumn!
   order: SortOrder!
 }
 
@@ -1144,7 +1061,6 @@ type Refund {
   customer: OldUser
   description: String!
   id: ID!
-  images: [Attachment!]
   order: Order
   shop: Shop
   status: RefundStatus
@@ -1156,7 +1072,6 @@ input RefundInputType {
   amount: String!
   customer: UserInputType
   description: String!
-  images: [AttachmentInput!]
   order: OrderInputType
   shop: ShopInputType
   status: RefundStatus
@@ -1204,7 +1119,6 @@ type SeoSettings {
   metaTags: String
   metaTitle: String
   ogDescription: String
-  ogImage: Attachment
   ogTitle: String
   twitterCardType: String
   twitterHandle: String
@@ -1216,7 +1130,6 @@ input SeoSettingsInputType {
   metaTags: String
   metaTitle: String
   ogDescription: String
-  ogImage: AttachmentInput
   ogTitle: String
   twitterCardType: String
   twitterHandle: String
@@ -1240,7 +1153,6 @@ type SettingsOptions {
   deliveryTime: [DeliveryTime!]!
   facebook: FacebookSettings
   google: GoogleSettings
-  logo: Attachment!
   minimumOrderAmount: Float!
   seo: SeoSettings!
   shippingClass: String!
@@ -1257,7 +1169,6 @@ input SettingsOptionsInput {
   deliveryTime: [DeliveryTimeInputType!]
   facebook: FacebookSettingsInputType
   google: GoogleSettingsInputType
-  logo: AttachmentInput
   minimumOrderAmount: Float
   seo: SeoSettingsInputType
   shippingClass: String
@@ -1286,12 +1197,10 @@ enum ShippingType {
 type Shop {
   address: UserAddress!
   balance: Balance
-  cover_image: Attachment
   created_at: DateTime!
   description: String
   id: ID!
   is_active: Boolean!
-  logo: Attachment
   name: String!
   orders_count: Int!
   owner: OldUser!
@@ -1306,10 +1215,8 @@ type Shop {
 input ShopInputType {
   address: UserAddressInputType!
   balance: BalanceInputType
-  cover_image: AttachmentInput
   description: String
   is_active: Boolean!
-  logo: AttachmentInput
   name: String!
   orders_count: Int!
   owner: UserInputType!
@@ -1379,7 +1286,6 @@ type Tag {
   details: String
   icon: String
   id: ID!
-  image: Attachment
   name: String!
   parent: Int
   products: [Product!]
@@ -1391,7 +1297,6 @@ type Tag {
 input TagInputType {
   details: String
   icon: String
-  image: AttachmentInput
   name: String!
   parent: Int
   products: [ProductInputType!]
@@ -1429,9 +1334,7 @@ type Type {
   created_at: DateTime!
   icon: String!
   id: ID!
-  image: Attachment!
   name: String!
-  promotional_sliders: [Attachment!]
   settings: TypeSettings
   slug: String!
   updated_at: DateTime!
@@ -1440,9 +1343,7 @@ type Type {
 input TypeInputType {
   banners: [BannerInputType!]
   icon: String!
-  image: AttachmentInput!
   name: String!
-  promotional_sliders: [AttachmentInput!]
   settings: TypeSettingsInputType
   slug: String!
 }
@@ -1476,13 +1377,8 @@ input UpdateAttributeInput {
 }
 
 input UpdateCategoryInput {
-  details: String
-  icon: String
-  id: ID!
-  image: AttachmentInput
   name: String
-  parent: Int
-  type: ConnectTypeBelongsTo
+  parentUid: String
 }
 
 input UpdateCouponInput {
@@ -1492,7 +1388,6 @@ input UpdateCouponInput {
   description: String
   expire_at: String
   id: ID!
-  image: AttachmentInput
   type: CouponType
 }
 
@@ -1528,10 +1423,8 @@ input UpdateOrderStatusInput {
 input UpdateProductInput {
   categories: [ID!]
   description: String
-  gallery: [AttachmentInput!]
   height: String
   id: ID!
-  image: AttachmentInput
   in_stock: Boolean
   is_taxable: Boolean
   length: String
@@ -1570,10 +1463,8 @@ input UpdateShopInput {
   address: UserAddressInputType
   balance: BalanceInput
   categories: [ID!]
-  cover_image: AttachmentInput
   description: String
   id: ID!
-  logo: AttachmentInput
   name: String
   settings: ShopSettingsInputType
 }
@@ -1582,9 +1473,7 @@ input UpdateTagInput {
   details: String
   icon: String
   id: ID!
-  image: AttachmentInput
   name: String
-  type: ConnectTypeBelongsTo
 }
 
 input UpdateTaxInput {
@@ -1605,7 +1494,6 @@ input UpdateTypeInput {
   icon: String
   id: ID!
   name: String
-  promotional_sliders: [AttachmentInput!]
   settings: TypeSettingsInputType
 }
 

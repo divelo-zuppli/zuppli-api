@@ -1,47 +1,106 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { CategoriesService } from './categories.service';
-import { Category } from './entities/category.entity';
-import { CreateCategoryInput } from './dto/create-category.input';
-import { UpdateCategoryInput } from './dto/update-category.input';
 import {
-  CategoryPaginator,
-  GetCategoriesArgs,
-} from './dto/get-categories.args';
-import { GetCategoryArgs } from './dto/get-category.args';
+  Resolver,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+  Query,
+} from '@nestjs/graphql';
+import { GraphQLUpload, FileUpload } from 'graphql-upload';
+
+import { CategoriesService } from './categories.service';
+import { CategoryLoaders } from './category.loaders';
+
+import { Category } from './models/category.model';
+import { Attachment } from '../attachment/models/attachment.model';
+
+import { CreateCategoryInput } from './dto/create-category-input.dto';
+import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
+import { UpdateCategoryInput } from './dto/update-category-input.dto';
 
 @Resolver(() => Category)
 export class CategoriesResolver {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(
+    private readonly service: CategoriesService,
+    private readonly loaders: CategoryLoaders,
+  ) {}
 
-  @Mutation(() => Category)
-  createCategory(@Args('input') createCategoryInput: CreateCategoryInput) {
-    return this.categoriesService.create(createCategoryInput);
-  }
+  /* CRUD LOGIC */
 
-  @Query(() => CategoryPaginator, { name: 'categories' })
-  async getCategories(
-    @Args() getCategoriesArgs: GetCategoriesArgs,
-  ): Promise<CategoryPaginator> {
-    return this.categoriesService.getCategories(getCategoriesArgs);
-  }
-
-  @Query(() => Category, { name: 'category' })
-  async getCategory(
-    @Args() getCategoryArgs: GetCategoryArgs,
+  @Mutation(() => Category, { name: 'createCategory' })
+  create(
+    @Args('createCategoryInput') input: CreateCategoryInput,
   ): Promise<Category> {
-    return this.categoriesService.getCategory(getCategoryArgs);
+    return this.service.create(input);
   }
 
-  @Mutation(() => Category)
-  updateCategory(@Args('input') updateCategoryInput: UpdateCategoryInput) {
-    return this.categoriesService.update(
-      updateCategoryInput.id,
-      updateCategoryInput,
-    );
+  @Query(() => Category, { name: 'getCategory', nullable: true })
+  getOne(
+    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+  ): Promise<Category> {
+    return this.service.getOne(getOneCategoryInput);
   }
 
-  @Mutation(() => Category)
-  deleteCategory(@Args('id', { type: () => ID }) id: number) {
-    return this.categoriesService.remove(id);
+  @Mutation(() => Category, { name: 'updateCategory' })
+  update(
+    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+    @Args('updateCategoryInput') input: UpdateCategoryInput,
+  ) {
+    return this.service.update(getOneCategoryInput, input);
   }
+
+  @Mutation(() => Category, { name: 'deleteCategory' })
+  delete(
+    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+  ) {
+    return this.service.delete(getOneCategoryInput);
+  }
+
+  /* CRUD LOGIC */
+
+  /* RESOLVE FIELDS LOGIC */
+
+  @ResolveField(() => Category, { name: 'parent', nullable: true })
+  parent(@Parent() parent: Category): Promise<Category> {
+    const value: any = parent.parent;
+
+    if (!value) return Promise.resolve(null);
+
+    let id = value;
+
+    if (typeof id !== 'number') id = value.id;
+
+    return this.loaders.batchCategories.load(id);
+  }
+
+  @ResolveField(() => [Category], { name: 'children' })
+  public children(@Parent() parent: Category): Promise<Category[]> {
+    return this.service.children(parent);
+  }
+
+  @ResolveField(() => [Attachment], { name: 'attatchments' })
+  public attatchments(@Parent() parent: Category): Promise<Attachment[]> {
+    return this.service.attatchments(parent);
+  }
+
+  /* RESOLVE FIELDS LOGIC */
+
+  /* EXTRA LOGIC */
+
+  @Mutation(() => Category, { name: 'uploadCategoryImage' })
+  uploadImage(
+    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+    @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: FileUpload,
+  ): Promise<Category> {
+    return this.service.uploadImage(getOneCategoryInput, fileUpload);
+  }
+
+  @Mutation(() => Category, { name: 'deleteCategoryImage' })
+  deleteImage(
+    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+  ): Promise<Category> {
+    return this.service.deleteImage(getOneCategoryInput);
+  }
+
+  /* EXTRA LOGIC */
 }

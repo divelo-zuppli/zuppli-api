@@ -7,7 +7,6 @@ export class CreateCouponInput extends PickType(Coupon, [
   'type',
   'amount',
   'description',
-  'image',
   'expire_at',
   'active_from',
 ]) {}

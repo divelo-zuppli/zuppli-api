@@ -8,7 +8,7 @@ import { Tag } from './entities/tag.entity';
 @Injectable()
 export class TagsService {
   private tags: Tag[] = [];
-  create({ type, ...createTagInput }: CreateTagInput) {
+  create({ ...createTagInput }: CreateTagInput) {
     const newTag = {
       id: this.tags.length + 1,
       slug: createTagInput.name,

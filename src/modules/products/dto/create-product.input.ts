@@ -15,7 +15,6 @@ export class CreateProductInput extends OmitType(Product, [
   'updated_at',
   'orders',
   'pivot',
-  'categories',
   'tags',
   'type',
   'shop',

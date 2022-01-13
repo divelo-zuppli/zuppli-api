@@ -6,8 +6,6 @@ export class CreateShopInput extends PickType(Shop, [
   'name',
   'address',
   'description',
-  'cover_image',
-  'logo',
   'settings',
 ]) {
   @Field(() => [ID], { nullable: true })

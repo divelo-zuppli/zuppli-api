@@ -7,8 +7,7 @@ import {
   InputType,
 } from '@nestjs/graphql';
 import { AttributeValue } from 'src/modules/attributes/entities/attribute-value.entity';
-import { Category } from 'src/modules/categories/entities/category.entity';
-import { Attachment } from 'src/common/entities/attachment.entity';
+
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { Shop } from 'src/modules/shops/entities/shop.entity';
@@ -35,7 +34,6 @@ export class Product extends CoreEntity {
   @Field(() => Int)
   type_id: number;
   product_type: ProductType;
-  categories: Category[];
   tags?: Tag[];
   variations?: AttributeValue[];
   variation_options?: Variation[];
@@ -53,8 +51,6 @@ export class Product extends CoreEntity {
   max_price?: number;
   min_price?: number;
   sku?: string;
-  gallery?: Attachment[];
-  image?: Attachment;
   status: ProductStatus;
   height?: string;
   length?: string;

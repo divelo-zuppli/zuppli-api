@@ -27,6 +27,8 @@ import { ImportsModule } from './modules/imports/imports.module';
 import { WalletsModule } from './modules/wallets/wallets.module';
 import { RefundsModule } from './modules/refunds/refunds.module';
 import { ParameterModule } from './modules/parameter/parameter.module';
+import { CategoryAttachmentModule } from './modules/category-attachment/category-attachment.module';
+import { AttachmentModule } from './modules/attachment/attachment.module';
 
 @Module({
   imports: [
@@ -69,7 +71,6 @@ import { ParameterModule } from './modules/parameter/parameter.module';
     ShopsModule,
     TypesModule,
     TagsModule,
-    UploadsModule,
     // CommonModule,
     WithdrawsModule,
     TaxesModule,
@@ -79,6 +80,8 @@ import { ParameterModule } from './modules/parameter/parameter.module';
     WalletsModule,
     RefundsModule,
     ParameterModule,
+    CategoryAttachmentModule,
+    AttachmentModule,
   ],
   controllers: [],
   providers: [],

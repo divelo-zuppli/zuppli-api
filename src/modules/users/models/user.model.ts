@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { User as UserType } from '@prisma/client';
 
 @ObjectType()
-export class User implements UserType {
+export class User implements Partial<UserType> {
   @Field()
   id: number;
 

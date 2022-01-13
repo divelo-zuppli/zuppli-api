@@ -5,7 +5,6 @@ import { Type } from '../entities/type.entity';
 export class CreateTypeInput extends PickType(Type, [
   'name',
   'banners',
-  'promotional_sliders',
   'settings',
   'icon',
 ]) {}

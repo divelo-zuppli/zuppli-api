@@ -3,7 +3,6 @@ import { Profile } from '../entities/profile.entity';
 
 @InputType()
 export class ProfileInput extends PickType(Profile, [
-  'avatar',
   'bio',
   'socials',
   'contact',

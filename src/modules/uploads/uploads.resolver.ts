@@ -1,12 +1,11 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Attachment } from 'src/common/entities/attachment.entity';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
 import { UploadsService } from './uploads.service';
 
 @Resolver()
 export class UploadsResolver {
   constructor(private readonly uploadsService: UploadsService) {}
-  @Mutation(() => [Attachment])
+  @Mutation(() => [])
   upload(
     @Args({ name: 'attachment', type: () => [GraphQLUpload], nullable: true })
     attachment?: FileUpload,

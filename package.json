@@ -22,7 +22,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma:migrate:dev": "npx prisma migrate dev --name",
+    "prisma:db:push": "npx prisma push",
+    "prisma:db:pull": "npx prisma pull"
   },
   "dependencies": {
     "@apollo/gateway": "0.45.0",
@@ -35,12 +38,15 @@
     "apollo-server-express": "3.6.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
+    "cloudinary": "1.28.1",
+    "dataloader": "2.0.0",
     "fuse.js": "6.5.3",
     "graphql": "15.8.0",
     "graphql-request": "3.7.0",
     "graphql-tools": "8.2.0",
     "graphql-upload": "13.0.0",
     "joi": "17.5.0",
+    "nanoid": "3.1.31",
     "nestjs-basic-acl-sdk": "0.1.5",
     "reflect-metadata": "0.1.13",
     "rimraf": "3.0.2",
