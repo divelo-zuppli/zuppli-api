@@ -3,6 +3,6 @@ import { CouponsService } from './coupons.service';
 import { CouponsResolver } from './coupons.resolver';
 
 @Module({
-  providers: [CouponsResolver, CouponsService]
+  providers: [CouponsResolver, CouponsService],
 })
 export class CouponsModule {}

@@ -3,6 +3,6 @@ import { AnalyticsService } from './analytics.service';
 import { AnalyticsResolver } from './analytics.resolver';
 
 @Module({
-  providers: [AnalyticsResolver, AnalyticsService]
+  providers: [AnalyticsResolver, AnalyticsService],
 })
 export class AnalyticsModule {}

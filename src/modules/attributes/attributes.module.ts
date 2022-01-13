@@ -3,6 +3,6 @@ import { AttributesService } from './attributes.service';
 import { AttributesResolver } from './attributes.resolver';
 
 @Module({
-  providers: [AttributesResolver, AttributesService]
+  providers: [AttributesResolver, AttributesService],
 })
 export class AttributesModule {}
