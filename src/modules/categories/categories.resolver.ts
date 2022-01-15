@@ -16,6 +16,7 @@ import { Attachment } from '../attachment/models/attachment.model';
 
 import { CreateCategoryInput } from './dto/create-category-input.dto';
 import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
+import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
 
 @Resolver(() => Category)
@@ -39,6 +40,13 @@ export class CategoriesResolver {
     @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
   ): Promise<Category> {
     return this.service.getOne(getOneCategoryInput);
+  }
+
+  @Query(() => [Category], { name: 'getAllCategories', nullable: true })
+  getAll(
+    @Args('getAllCategoriesInput') input: GetAllCategoriesInput,
+  ): Promise<Category[]> {
+    return this.service.getAll(input);
   }
 
   @Mutation(() => Category, { name: 'updateCategory' })

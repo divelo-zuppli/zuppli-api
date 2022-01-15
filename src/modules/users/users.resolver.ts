@@ -5,17 +5,12 @@ import { Public } from 'nestjs-basic-acl-sdk';
 import { OldUser } from './entities/user.entity';
 import {
   AuthResponse,
-  ChangePasswordInput,
-  ForgetPasswordInput,
   LoginInput,
   OtpInput,
   OtpLoginInput,
   OtpResponse,
-  PasswordChangeResponse,
   RegisterInput,
-  ResetPasswordInput,
   SocialLoginInput,
-  VerifyForgetPasswordTokenInput,
   VerifyOtpInput,
 } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -100,29 +95,6 @@ export class UsersResolver {
   @Mutation(() => Boolean)
   async logout(): Promise<boolean> {
     return true;
-  }
-
-  @Mutation(() => PasswordChangeResponse)
-  async forgetPassword(
-    @Args('input') forgetPasswordInput: ForgetPasswordInput,
-  ): Promise<PasswordChangeResponse> {
-    return this.service.forgetPassword(forgetPasswordInput);
-  }
-  @Mutation(() => PasswordChangeResponse)
-  async verifyForgetPasswordToken(
-    @Args('input')
-    verifyForgetPasswordTokenInput: VerifyForgetPasswordTokenInput,
-  ): Promise<PasswordChangeResponse> {
-    return this.service.verifyForgetPasswordToken(
-      verifyForgetPasswordTokenInput,
-    );
-  }
-  @Mutation(() => PasswordChangeResponse)
-  async resetPassword(
-    @Args('input')
-    resetPasswordInput: ResetPasswordInput,
-  ): Promise<PasswordChangeResponse> {
-    return this.service.resetPassword(resetPasswordInput);
   }
 
   @Query(() => UserPaginator, { name: 'users' })

@@ -449,8 +449,11 @@ input FacebookSettingsInputType {
   pageId: String!
 }
 
-input ForgetPasswordInput {
-  email: String!
+input GetAllCategoriesInput {
+  limit: Int
+  onlyRoots: Boolean
+  q: String
+  skip: Int
 }
 
 input GetOneCategoryInput {
@@ -541,7 +544,6 @@ type Mutation {
   deleteType(id: ID!): Type!
   deleteWithdraw(id: ID!): Withdraw!
   disapproveShop(id: ID!): Shop!
-  forgetPassword(input: ForgetPasswordInput!): PasswordChangeResponse!
   importAttributes(csv: Upload!, shop_id: ID!): Boolean!
   importProducts(csv: Upload!, shop_id: ID!): Boolean!
   importVariationOptions(csv: Upload!, shop_id: ID!): Boolean!
@@ -551,7 +553,6 @@ type Mutation {
   register(input: RegisterInput!): AuthResponse!
   removeStaff(id: ID!): OldUser!
   removeUser(id: ID!): OldUser!
-  resetPassword(input: ResetPasswordInput!): PasswordChangeResponse!
   sendOtpCode(input: OtpInput!): OtpResponse!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   socialLogin(input: SocialLoginInput!): AuthResponse!
@@ -574,7 +575,6 @@ type Mutation {
   uploadCategoryImage(file: Upload!, getOneCategoryInput: GetOneCategoryInput!): Category!
   verifyCheckout(input: CheckoutVerificationInput!): VerifiedCheckoutData!
   verifyCoupon(code: String!): VerifyCouponResponse!
-  verifyForgetPasswordToken(input: VerifyForgetPasswordTokenInput!): PasswordChangeResponse!
   verifyOtpCode(input: VerifyOtpInput!): SuccessResponse!
 }
 
@@ -713,11 +713,6 @@ type PaginatorInfo {
   lastPage: Int!
   perPage: Int!
   total: Int!
-}
-
-type PasswordChangeResponse {
-  message: String!
-  success: Boolean!
 }
 
 enum PaymentGatewayType {
@@ -863,6 +858,7 @@ type Query {
   attributes(orderBy: [QueryAttributesOrderByOrderByClause!], shop_id: ID): [Attribute!]!
   coupon(code: String, id: ID): Coupon!
   coupons(first: Int = 15, orderBy: [QueryCouponsOrderByOrderByClause!], page: Int = 1, text: String): CouponPaginator!
+  getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]
   getCategory(getOneCategoryInput: GetOneCategoryInput!): Category
   getUser(getOneUserInput: GetOneUserInput!): User!
   me: OldUser!
@@ -1095,12 +1091,6 @@ input RegisterInput {
   name: String!
   password: String
   permission: Permission = CUSTOMER
-}
-
-input ResetPasswordInput {
-  email: String!
-  password: String!
-  token: String!
 }
 
 enum SQLOperator {
@@ -1622,11 +1612,6 @@ type VerifiedCheckoutData {
 type VerifyCouponResponse {
   coupon: Coupon!
   is_valid: Boolean!
-}
-
-input VerifyForgetPasswordTokenInput {
-  email: String!
-  token: String!
 }
 
 input VerifyOtpInput {

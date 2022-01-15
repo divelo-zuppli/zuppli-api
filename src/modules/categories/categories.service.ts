@@ -26,6 +26,7 @@ import { createFileFromReadStream } from '../../utils';
 
 import { CreateCategoryInput } from './dto/create-category-input.dto';
 import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
+import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
 
 @Injectable()
@@ -104,6 +105,30 @@ export class CategoriesService {
     });
 
     return category as any;
+  }
+
+  public async getAll(input: GetAllCategoriesInput): Promise<Category[]> {
+    const { limit, skip = 0, q, onlyRoots = false } = input;
+
+    const categories = await this.prismaService.category.findMany({
+      where: {
+        name: {
+          contains: q,
+        },
+        parentId: onlyRoots ? null : undefined,
+      },
+      take: limit,
+      skip: skip,
+      include: {
+        parent: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return categories as any;
   }
 
   public async update(
