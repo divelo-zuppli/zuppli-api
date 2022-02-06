@@ -106,7 +106,6 @@ export class UserService {
     });
 
     if (existingByAuthUid) {
-      console.log('already exists');
       throw new ConflictException(
         `the user with authUid ${authUid} already exist.`,
       );
@@ -119,7 +118,7 @@ export class UserService {
     const aclUser = await this.basicAclService.createUser({
       authUid,
       roleCode,
-      phone: `+57${phoneNumber}`,
+      phone: phoneNumber ? `+57${phoneNumber}` : undefined,
       sendEmail: true,
       emailTemplateParams: {
         fullName,
