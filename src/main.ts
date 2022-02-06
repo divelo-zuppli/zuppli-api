@@ -24,4 +24,5 @@ async function bootstrap() {
     Logger.log(`app listening at ${PORT} in ${ENV}`, 'main.ts');
   });
 }
+
 bootstrap();

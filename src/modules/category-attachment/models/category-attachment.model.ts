@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { CategoryAttachment as CategoryAttachmentType } from '@prisma/client';
 
-import { Category } from '../../categories/models/category.model';
+import { Category } from '../../category/models/category.model';
 import { Attachment } from '../../attachment/models/attachment.model';
 
 @ObjectType()
