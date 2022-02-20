@@ -30,7 +30,7 @@
     "@nestjs/graphql": "9.1.2",
     "@nestjs/platform-express": "8.2.6",
     "@prisma/client": "3.9.2",
-    "apollo-server-express": "3.6.2",
+    "apollo-server-express": "3.6.3",
     "cloudinary": "1.28.1",
     "dataloader": "2.0.0",
     "graphql-upload": "13.0.0",
