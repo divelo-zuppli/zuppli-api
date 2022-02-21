@@ -18,6 +18,7 @@ import { CreateCategoryInput } from './dto/create-category-input.dto';
 import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
 import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
+import { UploadCategoryImageInput } from './dto/upload-category-image-input.dto';
 
 @Resolver(() => Category)
 export class CategoryResolver {
@@ -97,10 +98,11 @@ export class CategoryResolver {
 
   @Mutation(() => Category, { name: 'uploadCategoryImage' })
   uploadImage(
-    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+    @Args('uploadCategoryImageInput')
+    uploadCategoryImageInput: UploadCategoryImageInput,
     @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: FileUpload,
   ): Promise<Category> {
-    return this.service.uploadImage(getOneCategoryInput, fileUpload);
+    return this.service.uploadImage(uploadCategoryImageInput, fileUpload);
   }
 
   @Mutation(() => Category, { name: 'deleteCategoryImage' })

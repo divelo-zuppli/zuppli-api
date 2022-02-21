@@ -90,7 +90,7 @@ type Mutation {
   deleteCategoryImage(getOneCategoryInput: GetOneCategoryInput!): Category!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
-  uploadCategoryImage(file: Upload!, getOneCategoryInput: GetOneCategoryInput!): Category!
+  uploadCategoryImage(file: Upload!, uploadCategoryImageInput: UploadCategoryImageInput!): Category!
 }
 
 type Query {
@@ -110,6 +110,12 @@ input UpdateCategoryInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+input UploadCategoryImageInput {
+  main: Boolean
+  uid: String!
+  version: String
+}
 
 type User {
   authUid: String!

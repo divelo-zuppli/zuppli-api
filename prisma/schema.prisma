@@ -74,6 +74,8 @@ model Category {
 model CategoryAttachment {
   categoryId   Int @map("category_id")
   attachmentId Int  @map("attachment_id")
+  main        Boolean? @default(false)
+  version     String? @db.VarChar(50) 
 
   category   Category   @relation(fields: [categoryId], references: [id])
   attachment Attachment @relation(fields: [attachmentId], references: [id])

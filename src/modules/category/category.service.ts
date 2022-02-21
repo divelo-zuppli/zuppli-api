@@ -28,6 +28,7 @@ import { CreateCategoryInput } from './dto/create-category-input.dto';
 import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
 import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
+import { UploadCategoryImageInput } from './dto/upload-category-image-input.dto';
 
 @Injectable()
 export class CategoryService {
@@ -318,15 +319,15 @@ export class CategoryService {
   /* EXTRA LOGIC */
 
   public async uploadImage(
-    getOneCategoryInput: GetOneCategoryInput,
+    uploadCategoryImageInput: UploadCategoryImageInput,
     fileUpload: FileUpload,
   ): Promise<Category> {
     let filePath = '';
 
     try {
-      const { uid } = getOneCategoryInput;
+      const { uid } = uploadCategoryImageInput;
 
-      const category = await this.getOne(getOneCategoryInput);
+      const category = await this.getOne({ uid });
 
       if (!category) {
         throw new NotFoundException(`can't get category with the uid ${uid}.`);
@@ -379,10 +380,14 @@ export class CategoryService {
       });
 
       // create the category_attachment
+      const { main, version } = uploadCategoryImageInput;
+
       await this.prismaService.categoryAttachment.create({
         data: {
           categoryId: category.id,
           attachmentId: attachment.id,
+          main,
+          version,
         },
       });
 
