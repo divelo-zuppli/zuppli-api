@@ -15,10 +15,11 @@ import { nanoid } from 'nanoid';
 import { v2 as cloudinary } from 'cloudinary';
 import { ConfigType } from '@nestjs/config';
 
+import appConfig from '../../config/app.config';
+
 import { Category } from './models/category.model';
 import { Attachment } from '../attachment/models/attachment.model';
-
-import appConfig from '../../config/app.config';
+import { Reference } from '../reference/models/reference.model';
 
 import { PrismaService } from '../../prisma.service';
 
@@ -312,6 +313,19 @@ export class CategoryService {
     });
 
     return attachments.map(({ attachment }) => attachment);
+  }
+
+  public async references(parent: Category): Promise<Reference[]> {
+    const { id } = parent;
+
+    const { references } = await this.prismaService.category.findUnique({
+      where: { id },
+      include: {
+        references: true,
+      },
+    });
+
+    return references as any;
   }
 
   /* RESOLVE FIELDS LOGIC */

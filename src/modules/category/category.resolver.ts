@@ -14,6 +14,7 @@ import { CategoryLoaders } from './category.loaders';
 
 import { Category } from './models/category.model';
 import { Attachment } from '../attachment/models/attachment.model';
+import { Reference } from '../reference/models/reference.model';
 
 import { CreateCategoryInput } from './dto/create-category-input.dto';
 import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
@@ -83,13 +84,18 @@ export class CategoryResolver {
   }
 
   @ResolveField(() => [Category], { name: 'children' })
-  public children(@Parent() parent: Category): Promise<Category[]> {
+  children(@Parent() parent: Category): Promise<Category[]> {
     return this.service.children(parent);
   }
 
   @ResolveField(() => [Attachment], { name: 'attatchments' })
-  public attatchments(@Parent() parent: Category): Promise<Attachment[]> {
+  attatchments(@Parent() parent: Category): Promise<Attachment[]> {
     return this.service.attatchments(parent);
+  }
+
+  @ResolveField(() => [Reference], { name: 'references' })
+  references(@Parent() parent: Category): Promise<Reference[]> {
+    return this.service.references(parent);
   }
 
   /* RESOLVE FIELDS LOGIC */
