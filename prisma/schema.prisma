@@ -48,6 +48,7 @@ model Attachment {
 
   // relations
   categories CategoryAttachment[]
+  references ReferenceAttachment[]
 
   @@map("attachment")
 }
@@ -102,6 +103,24 @@ model Reference {
 
   // relations
   category Category @relation(fields: [categoryId], references: [id])
+  attachments ReferenceAttachment[]
 
   @@map("reference")
+}
+
+model ReferenceAttachment {
+  referenceId   Int      @map("reference_id")
+  attachmentId Int      @map("attachment_id")
+  main         Boolean? @default(false)
+  version      String?  @db.VarChar(50)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // relations
+  reference   Reference   @relation(fields: [referenceId], references: [id])
+  attachment Attachment @relation(fields: [attachmentId], references: [id])
+
+
+  @@id([referenceId, attachmentId])
+  @@map("reference_attachment")
 }

@@ -81,4 +81,8 @@ export class ReferenceResolver {
   }
 
   /* RESOLVE FIELDS LOGIC */
+
+  /* EXTRA LOGIC */
+
+  /* EXTRA LOGIC */
 }
