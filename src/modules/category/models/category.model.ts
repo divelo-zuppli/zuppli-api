@@ -1,6 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Category as CategoryType } from '@prisma/client';
-import { Attachment } from 'src/modules/attachment/models/attachment.model';
+
+import { Attachment } from '../../attachment/models/attachment.model';
+import { Reference } from '../../reference/models/reference.model';
 
 @ObjectType()
 export class Category implements Partial<CategoryType> {
@@ -32,4 +34,7 @@ export class Category implements Partial<CategoryType> {
 
   @Field(() => [Attachment], { nullable: true })
   attatchments: Attachment[];
+
+  @Field(() => [Reference], { nullable: true })
+  references: Reference[];
 }

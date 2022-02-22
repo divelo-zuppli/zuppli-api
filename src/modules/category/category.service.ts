@@ -18,9 +18,9 @@ import { ConfigType } from '@nestjs/config';
 import { Category } from './models/category.model';
 import { Attachment } from '../attachment/models/attachment.model';
 
-import { PrismaService } from '../../prisma.service';
-
 import appConfig from '../../config/app.config';
+
+import { PrismaService } from '../../prisma.service';
 
 import { createFileFromReadStream } from '../../utils';
 

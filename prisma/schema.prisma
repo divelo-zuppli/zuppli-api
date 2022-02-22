@@ -40,7 +40,7 @@ model Attachment {
   id      Int    @id @default(autoincrement())
   uid     String @unique @default(cuid())
   url     String @db.VarChar(250)
-  cloudId String @db.VarChar(50) @map("cloud_id")
+  cloudId String @map("cloud_id") @db.VarChar(50)
   type    String @db.VarChar(50)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -67,22 +67,41 @@ model Category {
   children Category[] @relation("CategoryChildren")
 
   attachments CategoryAttachment[]
+  references  Reference[]
 
   @@map("category")
 }
 
 model CategoryAttachment {
-  categoryId   Int @map("category_id")
-  attachmentId Int  @map("attachment_id")
-  main        Boolean? @default(false)
-  version     String? @db.VarChar(50) 
-
-  category   Category   @relation(fields: [categoryId], references: [id])
-  attachment Attachment @relation(fields: [attachmentId], references: [id])
+  categoryId   Int      @map("category_id")
+  attachmentId Int      @map("attachment_id")
+  main         Boolean? @default(false)
+  version      String?  @db.VarChar(50)
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@id([categoryId, attachmentId])
+  // relations
+  category   Category   @relation(fields: [categoryId], references: [id])
+  attachment Attachment @relation(fields: [attachmentId], references: [id])
 
+
+  @@id([categoryId, attachmentId])
   @@map("category_attachment")
+}
+
+model Reference {
+  id          Int     @id @default(autoincrement())
+  uid         String  @unique @default(cuid())
+  sku         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(250)
+  categoryId  Int     @map("category_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  // relations
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("reference")
 }

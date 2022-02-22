@@ -19,6 +19,7 @@ type Category {
   id: Float!
   name: String!
   parent: Category
+  references: [Reference!]
   slug: String!
   uid: String!
   updatedAt: DateTime!
@@ -43,6 +44,13 @@ input ChangeUserPhoneNumberInput {
 input CreateCategoryInput {
   name: String!
   parentUid: String
+}
+
+input CreateReferenceInput {
+  categoryUid: String!
+  description: String
+  name: String!
+  sku: String!
 }
 
 input CreateUserFromAuthUidInput {
@@ -71,7 +79,17 @@ input GetAllCategoriesInput {
   skip: Int
 }
 
+input GetAllReferencesInput {
+  limit: Int
+  q: String
+  skip: Int
+}
+
 input GetOneCategoryInput {
+  uid: String!
+}
+
+input GetOneReferenceInput {
   uid: String!
 }
 
@@ -84,19 +102,35 @@ type Mutation {
   changeUserPassword(changeUserPasswordInput: ChangeUserPasswordInput!): User!
   changeUserPhoneNumber(changeUserPhoneNumberInput: ChangeUserPhoneNumberInput!): User!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  createReference(createReferenceInput: CreateReferenceInput!): Reference!
   createUser(createUserInput: CreateUserInput!): User!
   createUserFromAuthUid(createUserFromAuthUidInput: CreateUserFromAuthUidInput!): User!
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteCategoryImage(getOneCategoryInput: GetOneCategoryInput!): Category!
+  deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
+  updateReference(getOneReferenceInput: GetOneReferenceInput!, updateReferenceInput: UpdateReferenceInput!): Reference!
   uploadCategoryImage(file: Upload!, uploadCategoryImageInput: UploadCategoryImageInput!): Category!
 }
 
 type Query {
-  getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]
+  getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]!
+  getAllReferences(getAllReferencesInput: GetAllReferencesInput!): [Reference!]!
   getCategory(getOneCategoryInput: GetOneCategoryInput!): Category
+  getReference(getOneReferenceInput: GetOneReferenceInput!): Reference
   getUser(getOneUserInput: GetOneUserInput!): User!
+}
+
+type Reference {
+  category: Category!
+  createdAt: DateTime!
+  description: String
+  id: Float!
+  name: String!
+  sku: String!
+  uid: String!
+  updatedAt: DateTime!
 }
 
 input SendUserResetPasswordEmail {
@@ -106,6 +140,13 @@ input SendUserResetPasswordEmail {
 input UpdateCategoryInput {
   name: String
   parentUid: String
+}
+
+input UpdateReferenceInput {
+  categoryUid: String
+  description: String
+  name: String
+  sku: String
 }
 
 """The `Upload` scalar type represents a file upload."""

@@ -1,3 +1,4 @@
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   Resolver,
   Mutation,
@@ -20,6 +21,7 @@ import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
 import { UploadCategoryImageInput } from './dto/upload-category-image-input.dto';
 
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Category)
 export class CategoryResolver {
   constructor(
@@ -38,12 +40,12 @@ export class CategoryResolver {
 
   @Query(() => Category, { name: 'getCategory', nullable: true })
   getOne(
-    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+    @Args('getOneCategoryInput') input: GetOneCategoryInput,
   ): Promise<Category> {
-    return this.service.getOne(getOneCategoryInput);
+    return this.service.getOne(input);
   }
 
-  @Query(() => [Category], { name: 'getAllCategories', nullable: true })
+  @Query(() => [Category], { name: 'getAllCategories' })
   getAll(
     @Args('getAllCategoriesInput') input: GetAllCategoriesInput,
   ): Promise<Category[]> {
@@ -59,10 +61,8 @@ export class CategoryResolver {
   }
 
   @Mutation(() => Category, { name: 'deleteCategory' })
-  delete(
-    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
-  ) {
-    return this.service.delete(getOneCategoryInput);
+  delete(@Args('getOneCategoryInput') input: GetOneCategoryInput) {
+    return this.service.delete(input);
   }
 
   /* CRUD LOGIC */

@@ -13,3 +13,11 @@ export const createFileFromReadStream = (
       .on('error', (err) => reject(err));
   });
 };
+
+export const capitalizeFirstLetter = (value) => {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
+
+export const capitalizePhrase = (value) => {
+  return value.split(' ').map(capitalizeFirstLetter).join(' ');
+};
