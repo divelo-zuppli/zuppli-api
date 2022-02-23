@@ -1,24 +1,38 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
+import { FileUpload } from 'graphql-upload';
+import { nanoid } from 'nanoid';
 
 import appConfig from '../../config/app.config';
 
 import { Reference } from './models/reference.model';
+import { Attachment } from '../attachment/models/attachment.model';
 
 import { PrismaService } from '../../prisma.service';
 
-import { capitalizePhrase, capitalizeFirstLetter } from '../../utils';
+import {
+  capitalizePhrase,
+  capitalizeFirstLetter,
+  createFileFromReadStream,
+} from '../../utils';
 
 import { CreateReferenceInput } from './dto/create-reference-input.dto';
 import { GetAllReferencesInput } from './dto/get-all-references-input.dto';
 import { GetOneReferenceInput } from './dto/get-one-reference-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
+import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 
 @Injectable()
 export class ReferenceService {
@@ -210,7 +224,7 @@ export class ReferenceService {
 
     // TODO: delete the attachments
 
-    // delete the category
+    // delete the reference
     await this.prismaService.reference.delete({
       where: {
         id: reference.id,
@@ -236,140 +250,159 @@ export class ReferenceService {
     return references as any;
   }
 
+  public async referenceAttachments(parent: Reference): Promise<Attachment[]> {
+    const { id } = parent;
+
+    const { referenceAttachments } =
+      await this.prismaService.reference.findUnique({
+        where: { id },
+        include: {
+          referenceAttachments: {
+            include: {
+              attachment: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    return referenceAttachments as any;
+  }
+
   /* RESOLVE FIELDS LOGIC */
 
   /* EXTRA LOGIC */
-  /*
-  
-    public async uploadImage(
-      uploadCategoryImageInput: UploadCategoryImageInput,
-      fileUpload: FileUpload,
-    ): Promise<Category> {
-      let filePath = '';
-  
-      try {
-        const { uid } = uploadCategoryImageInput;
-  
-        const category = await this.getOne({ uid });
-  
-        if (!category) {
-          throw new NotFoundException(`can't get category with the uid ${uid}.`);
-        }
-  
-        const { filename, mimetype } = fileUpload;
-  
-        if (!mimetype.startsWith('image')) {
-          throw new BadRequestException('mimetype not allowed.');
-        }
-  
-        const basePath = path.resolve(__dirname);
-  
-        const fileExt = filename.split('.').pop();
-  
-        const publicId = nanoid(6);
-  
-        filePath = `${basePath}/${category.slug}_${publicId}.${fileExt}`;
-  
-        const { createReadStream } = fileUpload;
-  
-        const stream = createReadStream();
-  
-        await createFileFromReadStream(stream, filePath);
-  
-        let cloudinaryResponse;
-  
-        try {
-          const folderName =
-            this.appConfiguration.environment === 'production'
-              ? 'categories'
-              : `${this.appConfiguration.environment}_categories`;
-  
-          cloudinaryResponse = await cloudinary.uploader.upload(filePath, {
-            folder: folderName,
-            public_id: publicId,
-            quality: 'auto:best',
-          });
-        } catch (error) {
-          throw new InternalServerErrorException(error.message);
-        }
-  
-        // create the attachment
-        const attachment = await this.prismaService.attachment.create({
-          data: {
-            cloudId: cloudinaryResponse.public_id,
-            type: 'category_image',
-            url: cloudinaryResponse.secure_url,
-          },
-        });
-  
-        // create the category_attachment
-        const { main, version } = uploadCategoryImageInput;
-  
-        await this.prismaService.categoryAttachment.create({
-          data: {
-            categoryId: category.id,
-            attachmentId: attachment.id,
-            main,
-            version,
-          },
-        });
-  
-        return category as any;
-      } finally {
-        if (filePath && fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+
+  public async uploadImage(
+    uploadReferenceImageInput: UploadReferenceImageInput,
+    fileUpload: FileUpload,
+  ): Promise<Reference> {
+    let filePath = '';
+
+    try {
+      const { uid } = uploadReferenceImageInput;
+
+      const reference = await this.getOne({ uid });
+
+      if (!reference) {
+        throw new NotFoundException(`can't get reference with the uid ${uid}.`);
       }
-    }
-  
-    public async deleteImage(getOneCategoryInput: GetOneCategoryInput) {
-      // get the category
-      const category = await this.getOne(getOneCategoryInput);
-  
-      const attachments = await this.prismaService.categoryAttachment.findMany({
-        where: {
-          categoryId: category.id,
-        },
-        include: {
-          attachment: true,
-        },
-      });
-  
-      if (!attachments.length) {
-        throw new NotFoundException(`the category doesn't have aattachments.`);
+
+      const { filename, mimetype } = fileUpload;
+
+      if (!mimetype.startsWith('image')) {
+        throw new BadRequestException('mimetype not allowed.');
       }
-  
-      // get the attachment
-      const lastAttachment = attachments[attachments.length - 1];
-  
-      // delete the file in cloudinary
+
+      const basePath = path.resolve(__dirname);
+
+      const fileExt = filename.split('.').pop();
+
+      const publicId = nanoid(6);
+
+      filePath = `${basePath}/${reference.sku}_${publicId}.${fileExt}`;
+
+      const { createReadStream } = fileUpload;
+
+      const stream = createReadStream();
+
+      await createFileFromReadStream(stream, filePath);
+
+      let cloudinaryResponse;
+
       try {
-        await cloudinary.uploader.destroy(lastAttachment.attachment.cloudId);
+        const folderName =
+          this.appConfiguration.environment === 'production'
+            ? 'references'
+            : `${this.appConfiguration.environment}_references`;
+
+        cloudinaryResponse = await cloudinary.uploader.upload(filePath, {
+          folder: folderName,
+          public_id: publicId,
+          quality: 'auto:best',
+        });
       } catch (error) {
-        Logger.error(error.message, CategoryService.name);
+        throw new InternalServerErrorException(error.message);
       }
-  
-      // delete the category_attachment
-      await this.prismaService.categoryAttachment.delete({
-        where: {
-          categoryId_attachmentId: {
-            categoryId: category.id,
-            attachmentId: lastAttachment.attachmentId,
-          },
+
+      // create the attachment
+      const attachment = await this.prismaService.attachment.create({
+        data: {
+          cloudId: cloudinaryResponse.public_id,
+          type: 'reference_image',
+          url: cloudinaryResponse.secure_url,
         },
       });
-  
-      // delete the attachment
-      await this.prismaService.attachment.delete({
-        where: {
-          id: lastAttachment.attachmentId,
+
+      // create the reference_attachment
+      const { main, version } = uploadReferenceImageInput;
+
+      await this.prismaService.referenceAttachment.create({
+        data: {
+          referenceId: reference.id,
+          attachmentId: attachment.id,
+          main,
+          version,
         },
       });
-  
-      return category as any;
+
+      return reference as any;
+    } finally {
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
-  
-    */
+  }
+
+  public async deleteImage(input: GetOneReferenceInput): Promise<Reference> {
+    // get the reference
+    const reference = await this.getOne(input);
+
+    const attachments = await this.prismaService.referenceAttachment.findMany({
+      where: {
+        referenceId: reference.id,
+      },
+      include: {
+        attachment: true,
+      },
+    });
+
+    if (!attachments.length) {
+      throw new NotFoundException(`the reference doesn't have aattachments.`);
+    }
+
+    // get the attachment
+    const lastAttachment = attachments[attachments.length - 1];
+
+    // delete the file in cloudinary
+    try {
+      await cloudinary.uploader.destroy(lastAttachment.attachment.cloudId);
+    } catch (error) {
+      Logger.error(error.message, ReferenceService.name);
+    }
+
+    // delete the reference_attachment
+    await this.prismaService.referenceAttachment.delete({
+      where: {
+        referenceId_attachmentId: {
+          referenceId: reference.id,
+          attachmentId: lastAttachment.attachmentId,
+        },
+      },
+    });
+
+    // delete the attachment
+    await this.prismaService.attachment.delete({
+      where: {
+        id: lastAttachment.attachmentId,
+      },
+    });
+
+    return reference as any;
+  }
 
   /* EXTRA LOGIC */
 }

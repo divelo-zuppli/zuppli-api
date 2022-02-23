@@ -13,7 +13,7 @@ type Attachment {
 }
 
 type Category {
-  attatchments: [Attachment!]
+  categoryAttachments: [CategoryAttachment!]
   children: [Category!]
   createdAt: DateTime!
   id: Float!
@@ -23,6 +23,14 @@ type Category {
   slug: String!
   uid: String!
   updatedAt: DateTime!
+}
+
+type CategoryAttachment {
+  attachment: Attachment!
+  category: Category!
+  createdAt: DateTime!
+  main: Boolean!
+  version: String
 }
 
 input ChangeUserEmailInput {
@@ -108,10 +116,12 @@ type Mutation {
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteCategoryImage(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
+  deleteReferenceImage(getOneReferenceInput: GetOneReferenceInput!): Reference!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
   updateReference(getOneReferenceInput: GetOneReferenceInput!, updateReferenceInput: UpdateReferenceInput!): Reference!
   uploadCategoryImage(file: Upload!, uploadCategoryImageInput: UploadCategoryImageInput!): Category!
+  uploadReferenceImage(file: Upload!, uploadReferenceImageInput: UploadReferenceImageInput!): Reference!
 }
 
 type Query {
@@ -128,9 +138,19 @@ type Reference {
   description: String
   id: Float!
   name: String!
+  referenceAttachments: [ReferenceAttachment!]
   sku: String!
   uid: String!
   updatedAt: DateTime!
+}
+
+type ReferenceAttachment {
+  attachment: Attachment!
+  attatchment: Attachment!
+  createdAt: DateTime!
+  main: Boolean!
+  reference: Reference!
+  version: String
 }
 
 input SendUserResetPasswordEmail {
@@ -153,6 +173,12 @@ input UpdateReferenceInput {
 scalar Upload
 
 input UploadCategoryImageInput {
+  main: Boolean
+  uid: String!
+  version: String
+}
+
+input UploadReferenceImageInput {
   main: Boolean
   uid: String!
   version: String

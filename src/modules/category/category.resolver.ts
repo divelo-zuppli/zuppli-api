@@ -13,8 +13,8 @@ import { CategoryService } from './category.service';
 import { CategoryLoaders } from './category.loaders';
 
 import { Category } from './models/category.model';
-import { Attachment } from '../attachment/models/attachment.model';
 import { Reference } from '../reference/models/reference.model';
+import { CategoryAttachment } from '../category-attachment/models/category-attachment.model';
 
 import { CreateCategoryInput } from './dto/create-category-input.dto';
 import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
@@ -88,9 +88,11 @@ export class CategoryResolver {
     return this.service.children(parent);
   }
 
-  @ResolveField(() => [Attachment], { name: 'attatchments' })
-  attatchments(@Parent() parent: Category): Promise<Attachment[]> {
-    return this.service.attatchments(parent);
+  @ResolveField(() => [CategoryAttachment], { name: 'categoryAttachments' })
+  categoryAttachments(
+    @Parent() parent: Category,
+  ): Promise<CategoryAttachment[]> {
+    return this.service.categoryAttachments(parent);
   }
 
   @ResolveField(() => [Reference], { name: 'references' })

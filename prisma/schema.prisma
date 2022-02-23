@@ -67,7 +67,7 @@ model Category {
   parent   Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
   children Category[] @relation("CategoryChildren")
 
-  attachments CategoryAttachment[]
+  categoryAttachments CategoryAttachment[]
   references  Reference[]
 
   @@map("category")
@@ -103,7 +103,7 @@ model Reference {
 
   // relations
   category Category @relation(fields: [categoryId], references: [id])
-  attachments ReferenceAttachment[]
+  referenceAttachments ReferenceAttachment[]
 
   @@map("reference")
 }

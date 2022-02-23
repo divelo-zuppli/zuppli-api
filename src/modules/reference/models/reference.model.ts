@@ -2,6 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Reference as ReferenceType } from '@prisma/client';
 
 import { Category } from '../../category/models/category.model';
+import { ReferenceAttachment } from '../../reference-attachment/models/reference-attachment.model';
 
 @ObjectType()
 export class Reference implements Partial<ReferenceType> {
@@ -27,6 +28,10 @@ export class Reference implements Partial<ReferenceType> {
   updatedAt: Date;
 
   // relations
+
   @Field(() => Category)
   category: Category[];
+
+  @Field(() => [ReferenceAttachment], { nullable: true })
+  referenceAttachments: ReferenceAttachment[];
 }

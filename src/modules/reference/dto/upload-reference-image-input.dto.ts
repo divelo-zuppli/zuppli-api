@@ -2,7 +2,7 @@ import { Field, InputType } from '@nestjs/graphql';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 @InputType()
-export class UploadCategoryImageInput {
+export class UploadReferenceImageInput {
   @IsString()
   @Field(() => String)
   readonly uid: string;

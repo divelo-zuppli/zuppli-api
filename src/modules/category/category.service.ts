@@ -18,8 +18,8 @@ import { ConfigType } from '@nestjs/config';
 import appConfig from '../../config/app.config';
 
 import { Category } from './models/category.model';
-import { Attachment } from '../attachment/models/attachment.model';
 import { Reference } from '../reference/models/reference.model';
+import { CategoryAttachment } from '../category-attachment/models/category-attachment.model';
 
 import { PrismaService } from '../../prisma.service';
 
@@ -212,14 +212,14 @@ export class CategoryService {
       throw new NotFoundException(`can't get category with the uid ${uid}.`);
     }
 
-    const { children, attachments } =
+    const { children, categoryAttachments } =
       await this.prismaService.category.findUnique({
         where: {
           uid,
         },
         include: {
           children: true,
-          attachments: {
+          categoryAttachments: {
             include: {
               attachment: {
                 select: {
@@ -246,7 +246,7 @@ export class CategoryService {
     await this.prismaService.attachment.deleteMany({
       where: {
         id: {
-          in: attachments.map(({ attachment }) => attachment.id),
+          in: categoryAttachments.map(({ attachment }) => attachment.id),
         },
       },
     });
@@ -298,21 +298,28 @@ export class CategoryService {
     return children as any;
   }
 
-  public async attatchments(parent: Category): Promise<Attachment[]> {
+  public async categoryAttachments(
+    parent: Category,
+  ): Promise<CategoryAttachment[]> {
     const { id } = parent;
 
-    const { attachments } = await this.prismaService.category.findUnique({
-      where: { id },
-      include: {
-        attachments: {
-          include: {
-            attachment: true,
+    const { categoryAttachments } =
+      await this.prismaService.category.findUnique({
+        where: { id },
+        include: {
+          categoryAttachments: {
+            include: {
+              attachment: {
+                select: {
+                  id: true,
+                },
+              },
+            },
           },
         },
-      },
-    });
+      });
 
-    return attachments.map(({ attachment }) => attachment);
+    return categoryAttachments as any;
   }
 
   public async references(parent: Category): Promise<Reference[]> {

@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { CategoryAttachmentService } from './category-attachment.service';
+import { CategoryAttachmentLoaders } from './category-attachment.loaders';
+import { CategoryAttachmentResolver } from './category-attachment.resolver';
+
+import { AttachmentModule } from '../attachment/attachment.module';
 
 @Module({
-  providers: [CategoryAttachmentService],
-  exports: [CategoryAttachmentService],
+  imports: [AttachmentModule],
+  providers: [CategoryAttachmentLoaders, CategoryAttachmentResolver],
 })
 export class CategoryAttachmentModule {}
