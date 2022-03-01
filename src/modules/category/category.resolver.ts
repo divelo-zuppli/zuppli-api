@@ -21,6 +21,7 @@ import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
 import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
 import { UploadCategoryImageInput } from './dto/upload-category-image-input.dto';
+import { DeleteCategoryImageInput } from './dto/delete-category-image-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Category)
@@ -115,9 +116,10 @@ export class CategoryResolver {
 
   @Mutation(() => Category, { name: 'deleteCategoryImage' })
   deleteImage(
-    @Args('getOneCategoryInput') getOneCategoryInput: GetOneCategoryInput,
+    @Args('deleteCategoryImageInput')
+    deleteCategoryImageInput: DeleteCategoryImageInput,
   ): Promise<Category> {
-    return this.service.deleteImage(getOneCategoryInput);
+    return this.service.deleteImage(deleteCategoryImageInput);
   }
 
   /* EXTRA LOGIC */

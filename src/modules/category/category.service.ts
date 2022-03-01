@@ -30,6 +30,7 @@ import { GetOneCategoryInput } from './dto/get-one-category-input.dto';
 import { GetAllCategoriesInput } from './dto/get-all-categories-input.dto';
 import { UpdateCategoryInput } from './dto/update-category-input.dto';
 import { UploadCategoryImageInput } from './dto/upload-category-image-input.dto';
+import { DeleteCategoryImageInput } from './dto/delete-category-image-input.dto';
 
 @Injectable()
 export class CategoryService {
@@ -420,29 +421,30 @@ export class CategoryService {
     }
   }
 
-  public async deleteImage(getOneCategoryInput: GetOneCategoryInput) {
+  public async deleteImage(input: DeleteCategoryImageInput) {
     // get the category
-    const category = await this.getOne(getOneCategoryInput);
+    const { categoryUid } = input;
+    const category = await this.getOne({
+      uid: categoryUid,
+    });
 
-    const attachments = await this.prismaService.categoryAttachment.findMany({
+    // get the attachment
+    const { attachmentUid } = input;
+    const attachment = await this.prismaService.attachment.findUnique({
       where: {
-        categoryId: category.id,
-      },
-      include: {
-        attachment: true,
+        uid: attachmentUid,
       },
     });
 
-    if (!attachments.length) {
-      throw new NotFoundException(`the category doesn't have aattachments.`);
+    if (!attachment) {
+      throw new NotFoundException(
+        `can't get attachment with the uid ${attachmentUid}.`,
+      );
     }
-
-    // get the attachment
-    const lastAttachment = attachments[attachments.length - 1];
 
     // delete the file in cloudinary
     try {
-      await cloudinary.uploader.destroy(lastAttachment.attachment.cloudId);
+      await cloudinary.uploader.destroy(attachment.cloudId);
     } catch (error) {
       Logger.error(error.message, CategoryService.name);
     }
@@ -452,7 +454,7 @@ export class CategoryService {
       where: {
         categoryId_attachmentId: {
           categoryId: category.id,
-          attachmentId: lastAttachment.attachmentId,
+          attachmentId: attachment.id,
         },
       },
     });
@@ -460,7 +462,7 @@ export class CategoryService {
     // delete the attachment
     await this.prismaService.attachment.delete({
       where: {
-        id: lastAttachment.attachmentId,
+        id: attachment.id,
       },
     });
 
