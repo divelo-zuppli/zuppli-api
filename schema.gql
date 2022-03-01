@@ -80,6 +80,11 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteCategoryImageInput {
+  attachmentUid: String!
+  categoryUid: String!
+}
+
 input GetAllCategoriesInput {
   limit: Int
   onlyRoots: Boolean
@@ -114,7 +119,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   createUserFromAuthUid(createUserFromAuthUidInput: CreateUserFromAuthUidInput!): User!
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
-  deleteCategoryImage(getOneCategoryInput: GetOneCategoryInput!): Category!
+  deleteCategoryImage(deleteCategoryImageInput: DeleteCategoryImageInput!): Category!
   deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
   deleteReferenceImage(getOneReferenceInput: GetOneReferenceInput!): Reference!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
