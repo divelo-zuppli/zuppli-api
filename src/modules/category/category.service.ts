@@ -428,6 +428,12 @@ export class CategoryService {
       uid: categoryUid,
     });
 
+    if (!category) {
+      throw new NotFoundException(
+        `can't get category with the uid ${categoryUid}.`,
+      );
+    }
+
     // get the attachment
     const { attachmentUid } = input;
     const attachment = await this.prismaService.attachment.findUnique({
