@@ -151,7 +151,6 @@ type Reference {
 
 type ReferenceAttachment {
   attachment: Attachment!
-  attatchment: Attachment!
   createdAt: DateTime!
   main: Boolean!
   reference: Reference!

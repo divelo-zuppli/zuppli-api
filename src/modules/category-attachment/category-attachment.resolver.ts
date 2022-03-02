@@ -22,7 +22,7 @@ export class CategoryAttachmentResolver {
 
     if (typeof id !== 'number') id = value.id;
 
-    return this.loaders.batchAttatchments.load(id);
+    return this.loaders.batchAttachments.load(id);
   }
   /* RESOLVE FIELDS LOGIC */
 }

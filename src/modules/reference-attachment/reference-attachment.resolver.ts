@@ -12,8 +12,8 @@ export class ReferenceAttachmentResolver {
   constructor(private readonly loaders: ReferenceAttachmentLoaders) {}
 
   /* RESOLVE FIELDS LOGIC */
-  @ResolveField(() => Attachment, { name: 'attatchment' })
-  attatchment(@Parent() parent: ReferenceAttachment): Promise<Attachment> {
+  @ResolveField(() => Attachment, { name: 'attachment' })
+  attachment(@Parent() parent: ReferenceAttachment): Promise<Attachment> {
     const value: any = parent.attachment;
 
     if (!value) return Promise.resolve(null);
@@ -22,7 +22,7 @@ export class ReferenceAttachmentResolver {
 
     if (typeof id !== 'number') id = value.id;
 
-    return this.loaders.batchAttatchments.load(id);
+    return this.loaders.batchAttachments.load(id);
   }
   /* RESOLVE FIELDS LOGIC */
 }
