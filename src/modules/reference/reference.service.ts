@@ -325,6 +325,7 @@ export class ReferenceService {
           quality: 'auto:best',
         });
       } catch (error) {
+        console.error(error);
         throw new InternalServerErrorException(error.message);
       }
 
