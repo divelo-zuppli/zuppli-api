@@ -33,6 +33,7 @@ import { GetAllReferencesInput } from './dto/get-all-references-input.dto';
 import { GetOneReferenceInput } from './dto/get-one-reference-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
+import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
 
 @Injectable()
 export class ReferenceService {
@@ -358,29 +359,39 @@ export class ReferenceService {
     }
   }
 
-  public async deleteImage(input: GetOneReferenceInput): Promise<Reference> {
+  public async deleteImage(
+    input: DeleteReferenceImageInput,
+  ): Promise<Reference> {
     // get the reference
-    const reference = await this.getOne(input);
+    const { referenceUid } = input;
 
-    const attachments = await this.prismaService.referenceAttachment.findMany({
-      where: {
-        referenceId: reference.id,
-      },
-      include: {
-        attachment: true,
-      },
+    const reference = await this.getOne({
+      uid: referenceUid,
     });
 
-    if (!attachments.length) {
-      throw new NotFoundException(`the reference doesn't have aattachments.`);
+    if (!reference) {
+      throw new NotFoundException(
+        `can't get reference with the uid ${referenceUid}.`,
+      );
     }
 
     // get the attachment
-    const lastAttachment = attachments[attachments.length - 1];
+    const { attachmentUid } = input;
+    const attachment = await this.prismaService.attachment.findUnique({
+      where: {
+        uid: attachmentUid,
+      },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException(
+        `can't get attachment with the uid ${attachmentUid}.`,
+      );
+    }
 
     // delete the file in cloudinary
     try {
-      await cloudinary.uploader.destroy(lastAttachment.attachment.cloudId);
+      await cloudinary.uploader.destroy(attachment.cloudId);
     } catch (error) {
       Logger.error(error.message, ReferenceService.name);
     }
@@ -390,7 +401,7 @@ export class ReferenceService {
       where: {
         referenceId_attachmentId: {
           referenceId: reference.id,
-          attachmentId: lastAttachment.attachmentId,
+          attachmentId: attachment.id,
         },
       },
     });
@@ -398,7 +409,7 @@ export class ReferenceService {
     // delete the attachment
     await this.prismaService.attachment.delete({
       where: {
-        id: lastAttachment.attachmentId,
+        id: attachment.id,
       },
     });
 
