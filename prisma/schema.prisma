@@ -96,6 +96,9 @@ model Reference {
   sku         String  @unique @db.VarChar(50)
   name        String  @db.VarChar(100)
   description String? @db.VarChar(250)
+  packaging   String? @db.VarChar(50)
+  measurementUnit String? @db.VarChar(50) @map("measurement_unit")
+  measurementValue Float? @map("measurement_value")
   categoryId  Int     @map("category_id")
 
   createdAt DateTime @default(now()) @map("created_at")

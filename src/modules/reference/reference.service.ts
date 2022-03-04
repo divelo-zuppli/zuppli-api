@@ -84,6 +84,9 @@ export class ReferenceService {
           ? capitalizeFirstLetter(input.description)
           : undefined,
         categoryId: exisingCategory.id,
+        packaging: input.packaging,
+        measurementUnit: input.measurementUnit,
+        measurementValue: input.measurementValue,
       },
     });
 
@@ -195,6 +198,9 @@ export class ReferenceService {
           ? capitalizeFirstLetter(description)
           : undefined,
         categoryId: exisingCategory ? exisingCategory.id : undefined,
+        packaging: input.packaging,
+        measurementUnit: input.measurementUnit,
+        measurementValue: input.measurementValue,
         updatedAt: new Date(),
       },
       include: {
