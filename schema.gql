@@ -57,7 +57,10 @@ input CreateCategoryInput {
 input CreateReferenceInput {
   categoryUid: String!
   description: String
+  measurementUnit: String
+  measurementValue: Float
   name: String!
+  packaging: String
   sku: String!
 }
 
@@ -83,6 +86,11 @@ scalar DateTime
 input DeleteCategoryImageInput {
   attachmentUid: String!
   categoryUid: String!
+}
+
+input DeleteReferenceImageInput {
+  attachmentUid: String!
+  referenceUid: String!
 }
 
 input GetAllCategoriesInput {
@@ -121,7 +129,7 @@ type Mutation {
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteCategoryImage(deleteCategoryImageInput: DeleteCategoryImageInput!): Category!
   deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
-  deleteReferenceImage(getOneReferenceInput: GetOneReferenceInput!): Reference!
+  deleteReferenceImage(deleteReferenceImageInput: DeleteReferenceImageInput!): Reference!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
   updateReference(getOneReferenceInput: GetOneReferenceInput!, updateReferenceInput: UpdateReferenceInput!): Reference!
@@ -169,7 +177,10 @@ input UpdateCategoryInput {
 input UpdateReferenceInput {
   categoryUid: String
   description: String
+  measurementUnit: String
+  measurementValue: Float
   name: String
+  packaging: String
   sku: String
 }
 
