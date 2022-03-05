@@ -48,6 +48,7 @@ export class CreateReferenceInput {
       return `measurementUnit must be one of ${keys.join(', ')}`;
     },
   })
+  @Field(() => String, { nullable: true })
   readonly measurementUnit?: string;
 
   @IsOptional()
