@@ -16,6 +16,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { CategoryAttachmentModule } from './modules/category-attachment/category-attachment.module';
 import { ReferenceModule } from './modules/reference/reference.module';
 import { ReferenceAttachmentModule } from './modules/reference-attachment/reference-attachment.module';
+import { BusinessModule } from './modules/business/business.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ReferenceAttachmentModule } from './modules/reference-attachment/refere
     CategoryAttachmentModule,
     ReferenceModule,
     ReferenceAttachmentModule,
+    BusinessModule,
   ],
   controllers: [AppController],
   providers: [AppService],

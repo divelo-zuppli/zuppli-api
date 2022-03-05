@@ -54,9 +54,11 @@ export class ReferenceService {
   public async create(input: CreateReferenceInput): Promise<Reference> {
     const { sku } = input;
 
-    const exisingReferenceBySKU = await this.prismaService.reference.findFirst({
-      where: { sku },
-    });
+    const exisingReferenceBySKU = await this.prismaService.reference.findUnique(
+      {
+        where: { sku },
+      },
+    );
 
     if (exisingReferenceBySKU) {
       throw new ConflictException(
