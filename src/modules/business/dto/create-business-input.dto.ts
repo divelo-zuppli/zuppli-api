@@ -17,5 +17,5 @@ export class CreateBusinessInput {
 
   @IsString()
   @Field(() => String)
-  readonly userUid: string;
+  readonly authUid: string;
 }

@@ -81,7 +81,7 @@ export class UserService {
         },
       });
 
-      return createdUser;
+      return createdUser as User;
     } catch (error) {
       Logger.warn('deleting the user in ACL', UserService.name);
 
@@ -137,7 +137,7 @@ export class UserService {
         },
       });
 
-      return created;
+      return created as User;
     } catch (error) {
       Logger.warn('deleting the user in ACL', UserService.name);
 
@@ -156,7 +156,19 @@ export class UserService {
       where: { authUid },
     });
 
-    return existingUser;
+    return existingUser as User;
+  }
+
+  public async getByIds(masterIds: number[]): Promise<User[]> {
+    const users = await this.prismaService.user.findMany({
+      where: {
+        id: {
+          in: masterIds,
+        },
+      },
+    });
+
+    return users as any;
   }
 
   public async sendResetPasswordEmail(
@@ -195,7 +207,7 @@ export class UserService {
       },
     });
 
-    return existingUser;
+    return existingUser as User;
   }
 
   public async changeEmail(input: ChangeUserEmailInput): Promise<User> {
@@ -224,7 +236,7 @@ export class UserService {
       where: { authUid },
     });
 
-    return updatedUser;
+    return updatedUser as User;
   }
 
   public async changePhoneNumber(
@@ -253,6 +265,6 @@ export class UserService {
       where: { authUid },
     });
 
-    return updatedUser;
+    return updatedUser as User;
   }
 }

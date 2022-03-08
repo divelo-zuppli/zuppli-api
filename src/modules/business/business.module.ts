@@ -4,9 +4,17 @@ import { ConfigModule } from '@nestjs/config';
 import { BusinessService } from './business.service';
 import { BusinessResolver } from './business.resolver';
 import { PrismaService } from '../../prisma.service';
+import { BusinessLoaders } from './business.loaders';
+
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [ConfigModule],
-  providers: [BusinessService, BusinessResolver, PrismaService],
+  imports: [ConfigModule, UserModule],
+  providers: [
+    PrismaService,
+    BusinessService,
+    BusinessLoaders,
+    BusinessResolver,
+  ],
 })
 export class BusinessModule {}

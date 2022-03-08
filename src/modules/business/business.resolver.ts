@@ -1,19 +1,31 @@
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Resolver,
+  Query,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
 
 import { Business } from './models/business.model';
+import { User } from '../user/models/user.model';
 
 import { BusinessService } from './business.service';
 
 import { CreateBusinessInput } from './dto/create-business-input.dto';
 import { GetOneBusinessInput } from './dto/get-one-business-input.dto';
-import { GetAllBusinessInput } from './dto/get-all-business-input.dto';
+import { GetAllBusinessesInput } from './dto/get-all-businesses-input.dto';
 import { UpdateBusinessInput } from './dto/update-business-input.dto';
+import { BusinessLoaders } from './business.loaders';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Business)
 export class BusinessResolver {
-  constructor(private readonly service: BusinessService) {}
+  constructor(
+    private readonly service: BusinessService,
+    private readonly loaders: BusinessLoaders,
+  ) {}
 
   /* CRUD LOGIC */
   @Mutation(() => Business, { name: 'createBusiness' })
@@ -30,9 +42,9 @@ export class BusinessResolver {
     return this.service.getOne(input);
   }
 
-  @Query(() => [Business], { name: 'getAllBusiness' })
+  @Query(() => [Business], { name: 'getAllBusinesses' })
   getAll(
-    @Args('getAllBusinessInput') input: GetAllBusinessInput,
+    @Args('getAllBusinessesInput') input: GetAllBusinessesInput,
   ): Promise<Business[]> {
     return this.service.getAll(input);
   }
@@ -50,4 +62,21 @@ export class BusinessResolver {
     return this.service.delete(input);
   }
   /* CRUD LOGIC */
+
+  /* RESOLVE FIELDS LOGIC */
+
+  @ResolveField(() => User, { name: 'user' })
+  category(@Parent() parent: Business): Promise<User> {
+    const value: any = parent.user;
+
+    if (!value) return Promise.resolve(null);
+
+    let id = value;
+
+    if (typeof id !== 'number') id = value.id;
+
+    return this.loaders.batchUsers.load(id);
+  }
+
+  /* RESOLVE FIELDS LOGIC */
 }

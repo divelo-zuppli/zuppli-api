@@ -62,9 +62,9 @@ input ChangeUserPhoneNumberInput {
 
 input CreateBusinessInput {
   address: String!
+  authUid: String!
   name: String!
   phoneNumber: String!
-  userUid: String!
 }
 
 input CreateCategoryInput {
@@ -111,7 +111,7 @@ input DeleteReferenceImageInput {
   referenceUid: String!
 }
 
-input GetAllBusinessInput {
+input GetAllBusinessesInput {
   limit: Int
   q: String
   skip: Int
@@ -169,7 +169,7 @@ type Mutation {
 }
 
 type Query {
-  getAllBusiness(getAllBusinessInput: GetAllBusinessInput!): [Business!]!
+  getAllBusinesses(getAllBusinessesInput: GetAllBusinessesInput!): [Business!]!
   getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]!
   getAllReferences(getAllReferencesInput: GetAllReferencesInput!): [Reference!]!
   getBusiness(getOneBusinessInput: GetOneBusinessInput!): Business
@@ -204,9 +204,9 @@ input SendUserResetPasswordEmail {
 
 input UpdateBusinessInput {
   address: String
+  authUid: String
   name: String
   phoneNumber: String
-  userUid: String
 }
 
 input UpdateCategoryInput {
@@ -241,6 +241,7 @@ input UploadReferenceImageInput {
 
 type User {
   authUid: String!
+  businesses: [Business!]
   createdAt: DateTime!
   email: String!
   fullName: String

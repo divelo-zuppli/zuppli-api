@@ -16,7 +16,7 @@ import { capitalizePhrase } from '../../utils';
 
 import { CreateBusinessInput } from './dto/create-business-input.dto';
 import { GetOneBusinessInput } from './dto/get-one-business-input.dto';
-import { GetAllBusinessInput } from './dto/get-all-business-input.dto';
+import { GetAllBusinessesInput } from './dto/get-all-businesses-input.dto';
 import { UpdateBusinessInput } from './dto/update-business-input.dto';
 
 @Injectable()
@@ -43,14 +43,16 @@ export class BusinessService {
       );
     }
 
-    const { userUid } = input;
+    const { authUid } = input;
 
-    const exisingUser = await this.prismaService.business.findUnique({
-      where: { uid: userUid },
+    const exisingUser = await this.prismaService.user.findUnique({
+      where: { authUid },
     });
 
     if (!exisingUser) {
-      throw new ConflictException(`can't get user with the uid ${userUid}.`);
+      throw new ConflictException(
+        `can't get user with the auth uid ${authUid}.`,
+      );
     }
 
     const created = await this.prismaService.business.create({
@@ -85,7 +87,7 @@ export class BusinessService {
     return business as any;
   }
 
-  public async getAll(input: GetAllBusinessInput): Promise<Business[]> {
+  public async getAll(input: GetAllBusinessesInput): Promise<Business[]> {
     const { limit, skip = 0, q } = input;
 
     const business = await this.prismaService.business.findMany({
@@ -136,18 +138,20 @@ export class BusinessService {
       }
     }
 
-    const { userUid } = input;
+    const { authUid } = input;
 
     // try to get the user
     let exisingUser;
 
-    if (userUid) {
-      exisingUser = await this.prismaService.business.findUnique({
-        where: { uid: userUid },
+    if (authUid) {
+      exisingUser = await this.prismaService.user.findUnique({
+        where: { authUid },
       });
 
       if (!exisingUser) {
-        throw new NotFoundException(`can't get user with the uid ${userUid}.`);
+        throw new NotFoundException(
+          `can't get user with the auth uid ${authUid}.`,
+        );
       }
     }
 
