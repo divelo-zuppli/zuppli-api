@@ -19,6 +19,7 @@ import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
+import { Business } from '../business/models/business.model';
 
 @Injectable()
 export class UserService {
@@ -169,6 +170,19 @@ export class UserService {
     });
 
     return users as any;
+  }
+
+  public async businesses(parent: User): Promise<Business[]> {
+    const { id } = parent;
+
+    const { businesses } = await this.prismaService.user.findUnique({
+      where: { id },
+      include: {
+        businesses: true,
+      },
+    });
+
+    return businesses as any[];
   }
 
   public async sendResetPasswordEmail(

@@ -1,8 +1,16 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { Public } from 'nestjs-basic-acl-sdk';
 
 import { User } from './models/user.model';
+import { Business } from '../business/models/business.model';
 
 import { UserService } from './user.service';
 
@@ -68,4 +76,13 @@ export class UserResolver {
   ): Promise<User> {
     return this.service.changePhoneNumber(input);
   }
+
+  /* RESOLVE FIELDS LOGIC */
+
+  @ResolveField(() => [Business], { name: 'businesses' })
+  businesses(@Parent() parent: User): Promise<Business[]> {
+    return this.service.businesses(parent);
+  }
+
+  /* RESOLVE FIELDS LOGIC */
 }
