@@ -130,6 +130,12 @@ input GetAllReferencesInput {
   skip: Int
 }
 
+input GetAllUsersInput {
+  limit: Int
+  q: String
+  skip: Int
+}
+
 input GetOneBusinessInput {
   uid: String!
 }
@@ -172,6 +178,7 @@ type Query {
   getAllBusinesses(getAllBusinessesInput: GetAllBusinessesInput!): [Business!]!
   getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]!
   getAllReferences(getAllReferencesInput: GetAllReferencesInput!): [Reference!]!
+  getAllUsers(getAllUsersInput: GetAllUsersInput!): [User!]!
   getBusiness(getOneBusinessInput: GetOneBusinessInput!): Business
   getCategory(getOneCategoryInput: GetOneCategoryInput!): Category
   getReference(getOneReferenceInput: GetOneReferenceInput!): Reference

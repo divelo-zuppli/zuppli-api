@@ -7,6 +7,7 @@ import {
 import { BasicAclService } from 'nestjs-basic-acl-sdk';
 
 import { User } from './models/user.model';
+import { Business } from '../business/models/business.model';
 
 import { PrismaService } from '../../prisma.service';
 import { ParameterService } from '../parameter/parameter.service';
@@ -19,7 +20,7 @@ import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
-import { Business } from '../business/models/business.model';
+import { GetAllUsersInput } from './dto/get-all-users-input.dto';
 
 @Injectable()
 export class UserService {
@@ -158,6 +159,22 @@ export class UserService {
     });
 
     return existingUser as User;
+  }
+
+  public async getAll(input: GetAllUsersInput): Promise<User[]> {
+    const { limit, skip = 0, q } = input;
+
+    const users = await this.prismaService.user.findMany({
+      where: {
+        email: {
+          contains: q,
+        },
+      },
+      take: limit,
+      skip: skip,
+    });
+
+    return users as any;
   }
 
   public async getByIds(masterIds: number[]): Promise<User[]> {
