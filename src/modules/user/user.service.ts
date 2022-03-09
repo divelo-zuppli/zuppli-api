@@ -21,6 +21,7 @@ import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 import { GetAllUsersInput } from './dto/get-all-users-input.dto';
+import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
 
 @Injectable()
 export class UserService {
@@ -148,6 +149,65 @@ export class UserService {
       });
 
       throw error;
+    }
+  }
+
+  public async createFromAdmin(input: CreateUserFromAdminInput): Promise<User> {
+    const { email } = input;
+
+    const exisingUserByEmail = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+
+    if (exisingUserByEmail) {
+      throw new ConflictException(
+        `already exist an user with the email ${email}.`,
+      );
+    }
+
+    const { phoneNumber } = input;
+
+    const exisingUserByPhoneNumber = await this.prismaService.user.findUnique({
+      where: { phoneNumber },
+    });
+
+    if (exisingUserByPhoneNumber) {
+      throw new ConflictException(
+        `already exist an user with the phone number ${phoneNumber}.`,
+      );
+    }
+
+    const { password, fullName, roleCode } = input;
+
+    const aclUser = await this.basicAclService.createUser({
+      email,
+      password,
+      phone: `+57${phoneNumber}`,
+      roleCode: roleCode,
+      sendEmail: true,
+      emailTemplateParams: {
+        fullName,
+      },
+    });
+
+    try {
+      const { authUid } = aclUser;
+
+      const createdUser = await this.prismaService.user.create({
+        data: {
+          authUid,
+          email,
+          phoneNumber,
+        },
+      });
+
+      return createdUser as User;
+    } catch (error) {
+      Logger.warn('deleting the user in ACL', UserService.name);
+
+      await this.basicAclService.deleteUser({
+        authUid: aclUser.authUid,
+      });
     }
   }
 

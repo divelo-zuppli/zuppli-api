@@ -82,6 +82,14 @@ input CreateReferenceInput {
   sku: String!
 }
 
+input CreateUserFromAdminInput {
+  email: String!
+  fullName: String
+  password: String!
+  phoneNumber: String!
+  roleCode: String!
+}
+
 input CreateUserFromAuthUidInput {
   authUid: String!
   email: String!
@@ -160,6 +168,7 @@ type Mutation {
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
   createReference(createReferenceInput: CreateReferenceInput!): Reference!
   createUser(createUserInput: CreateUserInput!): User!
+  createUserFromAdmin(createUserFromAdminInput: CreateUserFromAdminInput!): User!
   createUserFromAuthUid(createUserFromAuthUidInput: CreateUserFromAuthUidInput!): User!
   deleteBusiness(getOneBusinessInput: GetOneBusinessInput!): Business!
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
