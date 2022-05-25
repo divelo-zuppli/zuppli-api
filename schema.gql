@@ -252,7 +252,7 @@ input UploadCategoryImageInput {
 input UploadReferenceImageInput {
   main: Boolean
   uid: String!
-  version: String
+  version: String!
 }
 
 type User {
