@@ -300,6 +300,25 @@ export class ReferenceService {
         throw new NotFoundException(`can't get reference with the uid ${uid}.`);
       }
 
+      // try to get the reference attachment by the reference id and the version
+
+      const { main, version } = uploadReferenceImageInput;
+
+      const referenceAttachment =
+        await this.prismaService.referenceAttachment.findFirst({
+          where: {
+            referenceId: reference.id,
+            version,
+          },
+        });
+
+      // if the reference attachment is found, throw an error
+      if (referenceAttachment) {
+        throw new ConflictException(
+          `already exist an reference attachment with the version ${version}.`,
+        );
+      }
+
       const { filename, mimetype } = fileUpload;
 
       if (!mimetype.startsWith('image')) {
@@ -348,8 +367,6 @@ export class ReferenceService {
       });
 
       // create the reference_attachment
-      const { main, version } = uploadReferenceImageInput;
-
       await this.prismaService.referenceAttachment.create({
         data: {
           referenceId: reference.id,
