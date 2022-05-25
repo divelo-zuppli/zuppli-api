@@ -21,6 +21,7 @@ import { GetOneReferenceInput } from './dto/get-one-reference-input.dto';
 import { GetAllReferencesInput } from './dto/get-all-references-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
+import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Reference)
@@ -103,7 +104,7 @@ export class ReferenceResolver {
 
   @Mutation(() => Reference, { name: 'deleteReferenceImage' })
   deleteImage(
-    @Args('getOneReferenceInput') input: GetOneReferenceInput,
+    @Args('deleteReferenceImageInput') input: DeleteReferenceImageInput,
   ): Promise<Reference> {
     return this.service.deleteImage(input);
   }

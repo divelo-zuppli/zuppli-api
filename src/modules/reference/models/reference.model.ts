@@ -30,7 +30,7 @@ export class Reference implements Partial<ReferenceType> {
   // relations
 
   @Field(() => Category)
-  category: Category[];
+  category: Category;
 
   @Field(() => [ReferenceAttachment], { nullable: true })
   referenceAttachments: ReferenceAttachment[];

@@ -1,8 +1,16 @@
 import { UsePipes, ValidationPipe } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { Public } from 'nestjs-basic-acl-sdk';
 
 import { User } from './models/user.model';
+import { Business } from '../business/models/business.model';
 
 import { UserService } from './user.service';
 
@@ -14,6 +22,8 @@ import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
+import { GetAllUsersInput } from './dto/get-all-users-input.dto';
+import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => User)
@@ -33,6 +43,19 @@ export class UserResolver {
     input: CreateUserFromAuthUidInput,
   ): Promise<User> {
     return this.service.createFromAuthUid(input);
+  }
+
+  @Mutation(() => User, { name: 'createUserFromAdmin' })
+  createFromAdmin(
+    @Args('createUserFromAdminInput')
+    input: CreateUserFromAdminInput,
+  ): Promise<User> {
+    return this.service.createFromAdmin(input);
+  }
+
+  @Query(() => [User], { name: 'getAllUsers' })
+  getAll(@Args('getAllUsersInput') input: GetAllUsersInput): Promise<User[]> {
+    return this.service.getAll(input);
   }
 
   @Query(() => User, { name: 'getUser' })
@@ -68,4 +91,13 @@ export class UserResolver {
   ): Promise<User> {
     return this.service.changePhoneNumber(input);
   }
+
+  /* RESOLVE FIELDS LOGIC */
+
+  @ResolveField(() => [Business], { name: 'businesses' })
+  businesses(@Parent() parent: User): Promise<Business[]> {
+    return this.service.businesses(parent);
+  }
+
+  /* RESOLVE FIELDS LOGIC */
 }

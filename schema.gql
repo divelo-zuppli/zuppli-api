@@ -12,6 +12,17 @@ type Attachment {
   url: String!
 }
 
+type Business {
+  address: String!
+  createdAt: DateTime!
+  id: Float!
+  name: String!
+  phoneNumber: String!
+  uid: String!
+  updatedAt: DateTime!
+  user: User!
+}
+
 type Category {
   categoryAttachments: [CategoryAttachment!]
   children: [Category!]
@@ -49,6 +60,13 @@ input ChangeUserPhoneNumberInput {
   phoneNumber: String!
 }
 
+input CreateBusinessInput {
+  address: String!
+  authUid: String!
+  name: String!
+  phoneNumber: String!
+}
+
 input CreateCategoryInput {
   name: String!
   parentUid: String
@@ -57,8 +75,19 @@ input CreateCategoryInput {
 input CreateReferenceInput {
   categoryUid: String!
   description: String
+  measurementUnit: String
+  measurementValue: Float
   name: String!
+  packaging: String
   sku: String!
+}
+
+input CreateUserFromAdminInput {
+  email: String!
+  fullName: String
+  password: String!
+  phoneNumber: String!
+  roleCode: String!
 }
 
 input CreateUserFromAuthUidInput {
@@ -85,6 +114,17 @@ input DeleteCategoryImageInput {
   categoryUid: String!
 }
 
+input DeleteReferenceImageInput {
+  attachmentUid: String!
+  referenceUid: String!
+}
+
+input GetAllBusinessesInput {
+  limit: Int
+  q: String
+  skip: Int
+}
+
 input GetAllCategoriesInput {
   limit: Int
   onlyRoots: Boolean
@@ -96,6 +136,16 @@ input GetAllReferencesInput {
   limit: Int
   q: String
   skip: Int
+}
+
+input GetAllUsersInput {
+  limit: Int
+  q: String
+  skip: Int
+}
+
+input GetOneBusinessInput {
+  uid: String!
 }
 
 input GetOneCategoryInput {
@@ -114,15 +164,19 @@ type Mutation {
   changeUserEmail(changeUserEmailInput: ChangeUserEmailInput!): User!
   changeUserPassword(changeUserPasswordInput: ChangeUserPasswordInput!): User!
   changeUserPhoneNumber(changeUserPhoneNumberInput: ChangeUserPhoneNumberInput!): User!
+  createBusiness(createBusinessInput: CreateBusinessInput!): Business!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
   createReference(createReferenceInput: CreateReferenceInput!): Reference!
   createUser(createUserInput: CreateUserInput!): User!
+  createUserFromAdmin(createUserFromAdminInput: CreateUserFromAdminInput!): User!
   createUserFromAuthUid(createUserFromAuthUidInput: CreateUserFromAuthUidInput!): User!
+  deleteBusiness(getOneBusinessInput: GetOneBusinessInput!): Business!
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteCategoryImage(deleteCategoryImageInput: DeleteCategoryImageInput!): Category!
   deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
-  deleteReferenceImage(getOneReferenceInput: GetOneReferenceInput!): Reference!
+  deleteReferenceImage(deleteReferenceImageInput: DeleteReferenceImageInput!): Reference!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
+  updateBusiness(getOneBusinessInput: GetOneBusinessInput!, updateBusinessInput: UpdateBusinessInput!): Business!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
   updateReference(getOneReferenceInput: GetOneReferenceInput!, updateReferenceInput: UpdateReferenceInput!): Reference!
   uploadCategoryImage(file: Upload!, uploadCategoryImageInput: UploadCategoryImageInput!): Category!
@@ -130,8 +184,11 @@ type Mutation {
 }
 
 type Query {
+  getAllBusinesses(getAllBusinessesInput: GetAllBusinessesInput!): [Business!]!
   getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]!
   getAllReferences(getAllReferencesInput: GetAllReferencesInput!): [Reference!]!
+  getAllUsers(getAllUsersInput: GetAllUsersInput!): [User!]!
+  getBusiness(getOneBusinessInput: GetOneBusinessInput!): Business
   getCategory(getOneCategoryInput: GetOneCategoryInput!): Category
   getReference(getOneReferenceInput: GetOneReferenceInput!): Reference
   getUser(getOneUserInput: GetOneUserInput!): User!
@@ -161,6 +218,13 @@ input SendUserResetPasswordEmail {
   email: String!
 }
 
+input UpdateBusinessInput {
+  address: String
+  authUid: String
+  name: String
+  phoneNumber: String
+}
+
 input UpdateCategoryInput {
   name: String
   parentUid: String
@@ -169,7 +233,10 @@ input UpdateCategoryInput {
 input UpdateReferenceInput {
   categoryUid: String
   description: String
+  measurementUnit: String
+  measurementValue: Float
   name: String
+  packaging: String
   sku: String
 }
 
@@ -185,11 +252,12 @@ input UploadCategoryImageInput {
 input UploadReferenceImageInput {
   main: Boolean
   uid: String!
-  version: String
+  version: String!
 }
 
 type User {
   authUid: String!
+  businesses: [Business!]
   createdAt: DateTime!
   email: String!
   fullName: String

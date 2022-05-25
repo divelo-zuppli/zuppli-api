@@ -23,5 +23,6 @@ import { ParameterModule } from '../parameter/parameter.module';
     ParameterModule,
   ],
   providers: [UserService, UserResolver, PrismaService],
+  exports: [UserService],
 })
 export class UserModule {}

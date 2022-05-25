@@ -7,6 +7,7 @@ import {
 import { BasicAclService } from 'nestjs-basic-acl-sdk';
 
 import { User } from './models/user.model';
+import { Business } from '../business/models/business.model';
 
 import { PrismaService } from '../../prisma.service';
 import { ParameterService } from '../parameter/parameter.service';
@@ -19,6 +20,8 @@ import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
+import { GetAllUsersInput } from './dto/get-all-users-input.dto';
+import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
 
 @Injectable()
 export class UserService {
@@ -81,7 +84,7 @@ export class UserService {
         },
       });
 
-      return createdUser;
+      return createdUser as User;
     } catch (error) {
       Logger.warn('deleting the user in ACL', UserService.name);
 
@@ -137,7 +140,7 @@ export class UserService {
         },
       });
 
-      return created;
+      return created as User;
     } catch (error) {
       Logger.warn('deleting the user in ACL', UserService.name);
 
@@ -149,6 +152,65 @@ export class UserService {
     }
   }
 
+  public async createFromAdmin(input: CreateUserFromAdminInput): Promise<User> {
+    const { email } = input;
+
+    const exisingUserByEmail = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+
+    if (exisingUserByEmail) {
+      throw new ConflictException(
+        `already exist an user with the email ${email}.`,
+      );
+    }
+
+    const { phoneNumber } = input;
+
+    const exisingUserByPhoneNumber = await this.prismaService.user.findUnique({
+      where: { phoneNumber },
+    });
+
+    if (exisingUserByPhoneNumber) {
+      throw new ConflictException(
+        `already exist an user with the phone number ${phoneNumber}.`,
+      );
+    }
+
+    const { password, fullName, roleCode } = input;
+
+    const aclUser = await this.basicAclService.createUser({
+      email,
+      password,
+      phone: `+57${phoneNumber}`,
+      roleCode: roleCode,
+      sendEmail: true,
+      emailTemplateParams: {
+        fullName,
+      },
+    });
+
+    try {
+      const { authUid } = aclUser;
+
+      const createdUser = await this.prismaService.user.create({
+        data: {
+          authUid,
+          email,
+          phoneNumber,
+        },
+      });
+
+      return createdUser as User;
+    } catch (error) {
+      Logger.warn('deleting the user in ACL', UserService.name);
+
+      await this.basicAclService.deleteUser({
+        authUid: aclUser.authUid,
+      });
+    }
+  }
+
   public async getOne(input: GetOneUserInput): Promise<User> {
     const { authUid } = input;
 
@@ -156,7 +218,48 @@ export class UserService {
       where: { authUid },
     });
 
-    return existingUser;
+    return existingUser as User;
+  }
+
+  public async getAll(input: GetAllUsersInput): Promise<User[]> {
+    const { limit, skip = 0, q } = input;
+
+    const users = await this.prismaService.user.findMany({
+      where: {
+        email: {
+          contains: q,
+        },
+      },
+      take: limit,
+      skip: skip,
+    });
+
+    return users as any;
+  }
+
+  public async getByIds(masterIds: number[]): Promise<User[]> {
+    const users = await this.prismaService.user.findMany({
+      where: {
+        id: {
+          in: masterIds,
+        },
+      },
+    });
+
+    return users as any;
+  }
+
+  public async businesses(parent: User): Promise<Business[]> {
+    const { id } = parent;
+
+    const { businesses } = await this.prismaService.user.findUnique({
+      where: { id },
+      include: {
+        businesses: true,
+      },
+    });
+
+    return businesses as any[];
   }
 
   public async sendResetPasswordEmail(
@@ -195,7 +298,7 @@ export class UserService {
       },
     });
 
-    return existingUser;
+    return existingUser as User;
   }
 
   public async changeEmail(input: ChangeUserEmailInput): Promise<User> {
@@ -224,7 +327,7 @@ export class UserService {
       where: { authUid },
     });
 
-    return updatedUser;
+    return updatedUser as User;
   }
 
   public async changePhoneNumber(
@@ -253,6 +356,6 @@ export class UserService {
       where: { authUid },
     });
 
-    return updatedUser;
+    return updatedUser as User;
   }
 }
