@@ -116,7 +116,7 @@ model ReferenceAttachment {
   referenceId  Int      @map("reference_id")
   attachmentId Int      @map("attachment_id")
   main         Boolean? @default(false)
-  version      String?  @db.VarChar(50)
+  version      String?  @db.VarChar(50) // small, medium, large
 
   createdAt DateTime @default(now()) @map("created_at")
 
