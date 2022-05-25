@@ -66,7 +66,7 @@ export class BusinessResolver {
   /* RESOLVE FIELDS LOGIC */
 
   @ResolveField(() => User, { name: 'user' })
-  category(@Parent() parent: Business): Promise<User> {
+  user(@Parent() parent: Business): Promise<User> {
     const value: any = parent.user;
 
     if (!value) return Promise.resolve(null);

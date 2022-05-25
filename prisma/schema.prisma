@@ -108,6 +108,7 @@ model Reference {
   // relations
   category             Category              @relation(fields: [categoryId], references: [id])
   referenceAttachments ReferenceAttachment[]
+  products             Product[]
 
   @@map("reference")
 }
@@ -144,4 +145,22 @@ model Business {
   user User @relation(fields: [userId], references: [id])
 
   @@map("business")
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  uid         String  @unique @default(cuid())
+  sellPrice   Decimal @map("sell_price") @db.Decimal(15, 2)
+  costPrince  Decimal @map("cost_prince") @db.Decimal(15, 2)
+  stock       Int
+  referenceId Int     @map("reference_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  // relations
+  reference Reference @relation(fields: [referenceId], references: [id])
+
+
+  @@map("product")
 }
