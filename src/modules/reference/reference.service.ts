@@ -315,7 +315,7 @@ export class ReferenceService {
       // if the reference attachment is found, throw an error
       if (referenceAttachment) {
         throw new ConflictException(
-          `already exist an reference attachment with the version ${version}.`,
+          `already exist an reference attachment with the version: ${version}.`,
         );
       }
 

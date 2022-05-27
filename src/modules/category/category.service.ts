@@ -355,6 +355,25 @@ export class CategoryService {
         throw new NotFoundException(`can't get category with the uid ${uid}.`);
       }
 
+      // try to get the category attachment by the reference id and the version
+
+      const { main, version } = uploadCategoryImageInput;
+
+      const categoryAttachment =
+        await this.prismaService.categoryAttachment.findFirst({
+          where: {
+            categoryId: category.id,
+            version,
+          },
+        });
+
+      // if the category attachment is found, throw an error
+      if (categoryAttachment) {
+        throw new ConflictException(
+          `already exist an category attachment with the version: ${version}.`,
+        );
+      }
+
       const { filename, mimetype } = fileUpload;
 
       if (!mimetype.startsWith('image')) {
@@ -401,9 +420,6 @@ export class CategoryService {
           url: cloudinaryResponse.secure_url,
         },
       });
-
-      // create the category_attachment
-      const { main, version } = uploadCategoryImageInput;
 
       await this.prismaService.categoryAttachment.create({
         data: {
