@@ -21,6 +21,15 @@ export class Reference implements Partial<ReferenceType> {
   @Field({ nullable: true })
   description?: string;
 
+  @Field({ nullable: true })
+  packaging?: string;
+
+  @Field({ nullable: true })
+  measurementUnit?: string;
+
+  @Field({ nullable: true })
+  measurementValue?: number;
+
   @Field()
   createdAt: Date;
 

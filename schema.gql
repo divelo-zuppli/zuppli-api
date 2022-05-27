@@ -199,7 +199,10 @@ type Reference {
   createdAt: DateTime!
   description: String
   id: Float!
+  measurementUnit: String
+  measurementValue: Float
   name: String!
+  packaging: String
   referenceAttachments: [ReferenceAttachment!]
   sku: String!
   uid: String!
