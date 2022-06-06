@@ -23,6 +23,7 @@ import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
 import { VoidOutput } from '../../common/dto/void-output.dto';
+import { GetCategoryReferencesInput } from './dto/get-category-references-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Reference)
@@ -115,6 +116,13 @@ export class ReferenceResolver {
     @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: FileUpload,
   ): Promise<VoidOutput> {
     return this.service.loadReferences(fileUpload);
+  }
+
+  @Query(() => [Reference], { name: 'getCategoryReferences' })
+  getCategoryReferences(
+    @Args('getCategoryReferencesInput') input: GetCategoryReferencesInput,
+  ): Promise<Reference> {
+    return this.service.getCategoryReferences(input);
   }
 
   /* EXTRA LOGIC */

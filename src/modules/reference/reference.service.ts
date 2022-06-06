@@ -35,6 +35,7 @@ import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
 import { VoidOutput } from '../../common/dto/void-output.dto';
+import { GetCategoryReferencesInput } from './dto/get-category-references-input.dto';
 
 @Injectable()
 export class ReferenceService {
@@ -463,6 +464,66 @@ export class ReferenceService {
     return {
       message: 'ok',
     };
+  }
+
+  public async getCategoryReferences(input: GetCategoryReferencesInput) {
+    const { categoryUid, limit, skip = 0 } = input;
+
+    const category = await this.prismaService.category.findUnique({
+      where: {
+        uid: categoryUid,
+      },
+      include: {
+        children: {
+          include: {
+            children: {},
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException(
+        `can't get category with the uid ${categoryUid}.`,
+      );
+    }
+
+    // getting all the category ids
+    let categoryIds = [];
+
+    const iterateCategoryChildren = (category) => {
+      categoryIds = [...categoryIds, category.id];
+
+      if (category.children) {
+        const { children } = category;
+
+        for (const child of children) {
+          iterateCategoryChildren(child);
+        }
+      }
+    };
+
+    iterateCategoryChildren(category);
+
+    // get the references by the category ids
+    const references = await this.prismaService.reference.findMany({
+      where: {
+        categoryId: {
+          in: categoryIds,
+        },
+      },
+      take: limit,
+      skip: skip,
+      include: {
+        category: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return references as any;
   }
 
   /* EXTRA LOGIC */
