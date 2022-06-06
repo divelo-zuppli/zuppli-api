@@ -22,6 +22,7 @@ import { GetAllReferencesInput } from './dto/get-all-references-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Reference)
@@ -107,6 +108,13 @@ export class ReferenceResolver {
     @Args('deleteReferenceImageInput') input: DeleteReferenceImageInput,
   ): Promise<Reference> {
     return this.service.deleteImage(input);
+  }
+
+  @Mutation(() => VoidOutput, { name: 'loadReferences' })
+  loadReferences(
+    @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: FileUpload,
+  ): Promise<VoidOutput> {
+    return this.service.loadReferences(fileUpload);
   }
 
   /* EXTRA LOGIC */

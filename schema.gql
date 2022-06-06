@@ -194,6 +194,7 @@ type Mutation {
   deleteProduct(getOneProductInput: GetOneProductInput!): Product!
   deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
   deleteReferenceImage(deleteReferenceImageInput: DeleteReferenceImageInput!): Reference!
+  loadReferences(file: Upload!): VoidOutput!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   updateBusiness(getOneBusinessInput: GetOneBusinessInput!, updateBusinessInput: UpdateBusinessInput!): Business!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!

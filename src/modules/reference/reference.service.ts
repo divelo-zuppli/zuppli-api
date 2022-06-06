@@ -34,6 +34,7 @@ import { GetOneReferenceInput } from './dto/get-one-reference-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
 
 @Injectable()
 export class ReferenceService {
@@ -439,6 +440,29 @@ export class ReferenceService {
     });
 
     return reference as any;
+  }
+
+  public async loadReferences(fileUpload: FileUpload): Promise<VoidOutput> {
+    const filePath = '';
+
+    try {
+      const { filename, mimetype } = fileUpload;
+
+      if (!mimetype.startsWith('image')) {
+        throw new BadRequestException('mimetype not allowed.');
+      }
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error.message);
+    } finally {
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    return {
+      message: 'ok',
+    };
   }
 
   /* EXTRA LOGIC */

@@ -16,7 +16,7 @@ import { UserService } from './user.service';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid-input.dto';
-import { VoidOutput } from './dto/void-output.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
 import { SendUserResetPasswordEmail } from './dto/send-user-reset-password-email-input.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
