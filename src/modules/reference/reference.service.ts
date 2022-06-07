@@ -19,6 +19,7 @@ import appConfig from '../../config/app.config';
 
 import { Reference } from './models/reference.model';
 import { Attachment } from '../attachment/models/attachment.model';
+import { Product } from '../product/models/product.model';
 
 import { PrismaService } from '../../prisma.service';
 
@@ -281,6 +282,19 @@ export class ReferenceService {
       });
 
     return referenceAttachments as any;
+  }
+
+  public async products(parent: Reference): Promise<Product[]> {
+    const { id } = parent;
+
+    const { products } = await this.prismaService.reference.findUnique({
+      where: { id },
+      include: {
+        products: {},
+      },
+    });
+
+    return products as any;
   }
 
   /* RESOLVE FIELDS LOGIC */

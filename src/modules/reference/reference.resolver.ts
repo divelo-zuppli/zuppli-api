@@ -24,6 +24,7 @@ import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dt
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
 import { VoidOutput } from '../../common/dto/void-output.dto';
 import { GetCategoryReferencesInput } from './dto/get-category-references-input.dto';
+import { Product } from '../product/models/product.model';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Reference)
@@ -89,6 +90,11 @@ export class ReferenceResolver {
   @ResolveField(() => [Attachment], { name: 'referenceAttachments' })
   referenceAttachments(@Parent() parent: Reference): Promise<Attachment[]> {
     return this.service.referenceAttachments(parent);
+  }
+
+  @ResolveField(() => [Product], { name: 'products' })
+  products(@Parent() parent: Reference): Promise<Product[]> {
+    return this.service.products(parent);
   }
 
   /* RESOLVE FIELDS LOGIC */
