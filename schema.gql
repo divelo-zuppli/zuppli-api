@@ -233,7 +233,7 @@ type Query {
   getCategoryReferences(getCategoryReferencesInput: GetCategoryReferencesInput!): [Reference!]!
   getProduct(getOneProductInput: GetOneProductInput!): Product
   getReference(getOneReferenceInput: GetOneReferenceInput!): Reference
-  getUser(getOneUserInput: GetOneUserInput!): User!
+  getUser(getOneUserInput: GetOneUserInput!): User
 }
 
 type Reference {

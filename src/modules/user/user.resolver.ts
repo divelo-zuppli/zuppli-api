@@ -58,7 +58,7 @@ export class UserResolver {
     return this.service.getAll(input);
   }
 
-  @Query(() => User, { name: 'getUser' })
+  @Query(() => User, { name: 'getUser', nullable: true })
   getOne(@Args('getOneUserInput') input: GetOneUserInput): Promise<User> {
     return this.service.getOne(input);
   }
