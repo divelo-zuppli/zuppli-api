@@ -7,7 +7,7 @@ export class CreateBusinessInput {
   @Field(() => String)
   readonly name: string;
 
-  @Length(10)
+  @Length(10, 10)
   @IsNumberString()
   @Field(() => String)
   readonly phoneNumber: string;
