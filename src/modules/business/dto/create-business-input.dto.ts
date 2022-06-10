@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { IsNumberString, IsString, Length } from 'class-validator';
 
 @InputType()
 export class CreateBusinessInput {
@@ -7,7 +7,8 @@ export class CreateBusinessInput {
   @Field(() => String)
   readonly name: string;
 
-  @IsString()
+  @Length(10)
+  @IsNumberString()
   @Field(() => String)
   readonly phoneNumber: string;
 
