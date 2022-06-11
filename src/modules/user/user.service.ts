@@ -81,6 +81,7 @@ export class UserService {
           authUid,
           email,
           phoneNumber,
+          fullName,
         },
       });
 
