@@ -148,12 +148,13 @@ model Business {
 }
 
 model Product {
-  id          Int     @id @default(autoincrement())
-  uid         String  @unique @default(cuid())
-  sellPrice   Decimal @map("sell_price") @db.Decimal(15, 2)
-  costPrince  Decimal @map("cost_prince") @db.Decimal(15, 2)
+  id          Int      @id @default(autoincrement())
+  uid         String   @unique @default(cuid())
+  sellPrice   Decimal  @map("sell_price") @db.Decimal(15, 2)
+  costPrice   Decimal  @map("cost_price") @db.Decimal(15, 2)
+  salePrice   Decimal? @map("sale_price") @db.Decimal(15, 2)
   stock       Int
-  referenceId Int     @map("reference_id")
+  referenceId Int      @map("reference_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")

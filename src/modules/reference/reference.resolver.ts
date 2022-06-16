@@ -22,6 +22,9 @@ import { GetAllReferencesInput } from './dto/get-all-references-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
+import { GetCategoryReferencesInput } from './dto/get-category-references-input.dto';
+import { Product } from '../product/models/product.model';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => Reference)
@@ -89,6 +92,11 @@ export class ReferenceResolver {
     return this.service.referenceAttachments(parent);
   }
 
+  @ResolveField(() => [Product], { name: 'products' })
+  products(@Parent() parent: Reference): Promise<Product[]> {
+    return this.service.products(parent);
+  }
+
   /* RESOLVE FIELDS LOGIC */
 
   /* EXTRA LOGIC */
@@ -107,6 +115,20 @@ export class ReferenceResolver {
     @Args('deleteReferenceImageInput') input: DeleteReferenceImageInput,
   ): Promise<Reference> {
     return this.service.deleteImage(input);
+  }
+
+  @Mutation(() => VoidOutput, { name: 'loadReferences' })
+  loadReferences(
+    @Args({ name: 'file', type: () => GraphQLUpload }) fileUpload: FileUpload,
+  ): Promise<VoidOutput> {
+    return this.service.loadReferences(fileUpload);
+  }
+
+  @Query(() => [Reference], { name: 'getCategoryReferences' })
+  getCategoryReferences(
+    @Args('getCategoryReferencesInput') input: GetCategoryReferencesInput,
+  ): Promise<Reference> {
+    return this.service.getCategoryReferences(input);
   }
 
   /* EXTRA LOGIC */
