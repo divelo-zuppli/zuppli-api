@@ -22,6 +22,7 @@ import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 import { GetAllUsersInput } from './dto/get-all-users-input.dto';
 import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
+import { UpdateUserInput } from './dto/update-user-input.dto';
 
 @Injectable()
 export class UserService {
@@ -248,6 +249,32 @@ export class UserService {
     });
 
     return users as any;
+  }
+
+  public async update(
+    getOneUserInput: GetOneUserInput,
+    input: UpdateUserInput,
+  ): Promise<User> {
+    const exisingUser = await this.getOne(getOneUserInput);
+
+    if (!exisingUser) {
+      throw new NotFoundException(
+        `user with auth uid ${getOneUserInput.authUid} not found`,
+      );
+    }
+
+    const { fullName } = input;
+
+    const updated = await this.prismaService.user.update({
+      where: {
+        id: exisingUser.id,
+      },
+      data: {
+        fullName,
+      },
+    });
+
+    return updated as any;
   }
 
   public async businesses(parent: User): Promise<Business[]> {

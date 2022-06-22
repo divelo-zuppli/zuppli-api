@@ -24,6 +24,7 @@ import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 import { GetAllUsersInput } from './dto/get-all-users-input.dto';
 import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
+import { UpdateUserInput } from './dto/update-user-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => User)
@@ -69,6 +70,14 @@ export class UserResolver {
     @Args('sendUserResetPasswordEmail') input: SendUserResetPasswordEmail,
   ): Promise<VoidOutput> {
     return this.service.sendResetPasswordEmail(input);
+  }
+
+  @Mutation(() => User, { name: 'updateUser' })
+  update(
+    @Args('getOneUserInput') getOneUserInput: GetOneUserInput,
+    @Args('updateUserInput') input: UpdateUserInput,
+  ) {
+    return this.service.update(getOneUserInput, input);
   }
 
   @Mutation(() => User, { name: 'changeUserPassword' })
