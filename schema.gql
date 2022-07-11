@@ -72,11 +72,19 @@ input CreateCategoryInput {
   parentUid: String
 }
 
+input CreateProductInput {
+  costPrice: Float!
+  referenceUid: String!
+  salePrice: Float
+  sellPrice: Float!
+  stock: Int!
+}
+
 input CreateReferenceInput {
   categoryUid: String!
   description: String
   measurementUnit: String
-  measurementValue: Float
+  measurementValue: Int
   name: String!
   packaging: String
   sku: String!
@@ -132,6 +140,11 @@ input GetAllCategoriesInput {
   skip: Int
 }
 
+input GetAllProductsInput {
+  limit: Int
+  skip: Int
+}
+
 input GetAllReferencesInput {
   limit: Int
   q: String
@@ -144,11 +157,21 @@ input GetAllUsersInput {
   skip: Int
 }
 
+input GetCategoryReferencesInput {
+  categoryUid: String!
+  limit: Int
+  skip: Int
+}
+
 input GetOneBusinessInput {
   uid: String!
 }
 
 input GetOneCategoryInput {
+  uid: String!
+}
+
+input GetOneProductInput {
   uid: String!
 }
 
@@ -166,6 +189,7 @@ type Mutation {
   changeUserPhoneNumber(changeUserPhoneNumberInput: ChangeUserPhoneNumberInput!): User!
   createBusiness(createBusinessInput: CreateBusinessInput!): Business!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  createProduct(createProductInput: CreateProductInput!): Product!
   createReference(createReferenceInput: CreateReferenceInput!): Reference!
   createUser(createUserInput: CreateUserInput!): User!
   createUserFromAdmin(createUserFromAdminInput: CreateUserFromAdminInput!): User!
@@ -173,25 +197,43 @@ type Mutation {
   deleteBusiness(getOneBusinessInput: GetOneBusinessInput!): Business!
   deleteCategory(getOneCategoryInput: GetOneCategoryInput!): Category!
   deleteCategoryImage(deleteCategoryImageInput: DeleteCategoryImageInput!): Category!
+  deleteProduct(getOneProductInput: GetOneProductInput!): Product!
   deleteReference(getOneReferenceInput: GetOneReferenceInput!): Reference!
   deleteReferenceImage(deleteReferenceImageInput: DeleteReferenceImageInput!): Reference!
+  loadReferences(file: Upload!): VoidOutput!
   sendUserResetPasswordEmail(sendUserResetPasswordEmail: SendUserResetPasswordEmail!): VoidOutput!
   updateBusiness(getOneBusinessInput: GetOneBusinessInput!, updateBusinessInput: UpdateBusinessInput!): Business!
   updateCategory(getOneCategoryInput: GetOneCategoryInput!, updateCategoryInput: UpdateCategoryInput!): Category!
+  updateProduct(getOneProductInput: GetOneProductInput!, updateProductInput: UpdateProductInput!): Product!
   updateReference(getOneReferenceInput: GetOneReferenceInput!, updateReferenceInput: UpdateReferenceInput!): Reference!
   uploadCategoryImage(file: Upload!, uploadCategoryImageInput: UploadCategoryImageInput!): Category!
   uploadReferenceImage(file: Upload!, uploadReferenceImageInput: UploadReferenceImageInput!): Reference!
 }
 
+type Product {
+  costPrice: Float!
+  createdAt: DateTime!
+  id: Float!
+  reference: Reference!
+  salePrice: Float
+  sellPrice: Float!
+  stock: Float!
+  uid: String!
+  updatedAt: DateTime!
+}
+
 type Query {
   getAllBusinesses(getAllBusinessesInput: GetAllBusinessesInput!): [Business!]!
   getAllCategories(getAllCategoriesInput: GetAllCategoriesInput!): [Category!]!
+  getAllProducts(getAllProductsInput: GetAllProductsInput!): [Product!]!
   getAllReferences(getAllReferencesInput: GetAllReferencesInput!): [Reference!]!
   getAllUsers(getAllUsersInput: GetAllUsersInput!): [User!]!
   getBusiness(getOneBusinessInput: GetOneBusinessInput!): Business
   getCategory(getOneCategoryInput: GetOneCategoryInput!): Category
+  getCategoryReferences(getCategoryReferencesInput: GetCategoryReferencesInput!): [Reference!]!
+  getProduct(getOneProductInput: GetOneProductInput!): Product
   getReference(getOneReferenceInput: GetOneReferenceInput!): Reference
-  getUser(getOneUserInput: GetOneUserInput!): User!
+  getUser(getOneUserInput: GetOneUserInput!): User
 }
 
 type Reference {
@@ -203,6 +245,7 @@ type Reference {
   measurementValue: Float
   name: String!
   packaging: String
+  products: [Product!]
   referenceAttachments: [ReferenceAttachment!]
   sku: String!
   uid: String!
@@ -233,11 +276,19 @@ input UpdateCategoryInput {
   parentUid: String
 }
 
+input UpdateProductInput {
+  costPrice: Float
+  referenceUid: String
+  salePrice: Float
+  sellPrice: Float
+  stock: Int
+}
+
 input UpdateReferenceInput {
   categoryUid: String
   description: String
   measurementUnit: String
-  measurementValue: Float
+  measurementValue: Int
   name: String
   packaging: String
   sku: String
