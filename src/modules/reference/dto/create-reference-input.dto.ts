@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 enum Packaging {
@@ -53,7 +53,7 @@ export class CreateReferenceInput {
 
   @IsOptional()
   @IsNumber()
-  @Field(() => Number, { nullable: true })
+  @Field(() => Int, { nullable: true })
   readonly measurementValue?: number;
 
   @IsString()
