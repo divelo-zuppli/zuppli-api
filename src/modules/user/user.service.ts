@@ -15,13 +15,14 @@ import { ParameterService } from '../parameter/parameter.service';
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid-input.dto';
 import { SendUserResetPasswordEmail } from './dto/send-user-reset-password-email-input.dto';
-import { VoidOutput } from './dto/void-output.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
 import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input.dto';
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 import { GetAllUsersInput } from './dto/get-all-users-input.dto';
 import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
+import { UpdateUserInput } from './dto/update-user-input.dto';
 
 @Injectable()
 export class UserService {
@@ -81,6 +82,7 @@ export class UserService {
           authUid,
           email,
           phoneNumber,
+          fullName,
         },
       });
 
@@ -247,6 +249,32 @@ export class UserService {
     });
 
     return users as any;
+  }
+
+  public async update(
+    getOneUserInput: GetOneUserInput,
+    input: UpdateUserInput,
+  ): Promise<User> {
+    const exisingUser = await this.getOne(getOneUserInput);
+
+    if (!exisingUser) {
+      throw new NotFoundException(
+        `user with auth uid ${getOneUserInput.authUid} not found`,
+      );
+    }
+
+    const { fullName } = input;
+
+    const updated = await this.prismaService.user.update({
+      where: {
+        id: exisingUser.id,
+      },
+      data: {
+        fullName,
+      },
+    });
+
+    return updated as any;
   }
 
   public async businesses(parent: User): Promise<Business[]> {
