@@ -3,6 +3,7 @@ import { Reference as ReferenceType } from '@prisma/client';
 
 import { Category } from '../../category/models/category.model';
 import { ReferenceAttachment } from '../../reference-attachment/models/reference-attachment.model';
+import { Product } from '../../product/models/product.model';
 
 @ObjectType()
 export class Reference implements Partial<ReferenceType> {
@@ -43,4 +44,7 @@ export class Reference implements Partial<ReferenceType> {
 
   @Field(() => [ReferenceAttachment], { nullable: true })
   referenceAttachments: ReferenceAttachment[];
+
+  @Field(() => [Product], { nullable: true })
+  products: Product[];
 }

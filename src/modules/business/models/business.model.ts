@@ -30,4 +30,6 @@ export class Business implements Partial<BusinessType> {
 
   @Field(() => User)
   user: User;
+
+  userId: number;
 }
