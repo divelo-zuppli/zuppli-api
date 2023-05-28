@@ -19,6 +19,7 @@ import appConfig from '../../config/app.config';
 
 import { Reference } from './models/reference.model';
 import { Attachment } from '../attachment/models/attachment.model';
+import { Product } from '../product/models/product.model';
 
 import { PrismaService } from '../../prisma.service';
 
@@ -34,6 +35,8 @@ import { GetOneReferenceInput } from './dto/get-one-reference-input.dto';
 import { UpdateReferenceInput } from './dto/update-reference-input.dto';
 import { UploadReferenceImageInput } from './dto/upload-reference-image-input.dto';
 import { DeleteReferenceImageInput } from './dto/delete-reference-image-input.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
+import { GetCategoryReferencesInput } from './dto/get-category-references-input.dto';
 
 @Injectable()
 export class ReferenceService {
@@ -281,6 +284,19 @@ export class ReferenceService {
     return referenceAttachments as any;
   }
 
+  public async products(parent: Reference): Promise<Product[]> {
+    const { id } = parent;
+
+    const { products } = await this.prismaService.reference.findUnique({
+      where: { id },
+      include: {
+        products: {},
+      },
+    });
+
+    return products as any;
+  }
+
   /* RESOLVE FIELDS LOGIC */
 
   /* EXTRA LOGIC */
@@ -315,7 +331,7 @@ export class ReferenceService {
       // if the reference attachment is found, throw an error
       if (referenceAttachment) {
         throw new ConflictException(
-          `already exist an reference attachment with the version ${version}.`,
+          `already exist an reference attachment with the version: ${version}.`,
         );
       }
 
@@ -439,6 +455,89 @@ export class ReferenceService {
     });
 
     return reference as any;
+  }
+
+  public async loadReferences(fileUpload: FileUpload): Promise<VoidOutput> {
+    const filePath = '';
+
+    try {
+      const { filename, mimetype } = fileUpload;
+
+      if (!mimetype.startsWith('image')) {
+        throw new BadRequestException('mimetype not allowed.');
+      }
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error.message);
+    } finally {
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    return {
+      message: 'ok',
+    };
+  }
+
+  public async getCategoryReferences(input: GetCategoryReferencesInput) {
+    const { categoryUid, limit, skip = 0 } = input;
+
+    const category = await this.prismaService.category.findUnique({
+      where: {
+        uid: categoryUid,
+      },
+      include: {
+        children: {
+          include: {
+            children: {},
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException(
+        `can't get category with the uid ${categoryUid}.`,
+      );
+    }
+
+    // getting all the category ids
+    let categoryIds = [];
+
+    const iterateCategoryChildren = (category) => {
+      categoryIds = [...categoryIds, category.id];
+
+      if (category.children) {
+        const { children } = category;
+
+        for (const child of children) {
+          iterateCategoryChildren(child);
+        }
+      }
+    };
+
+    iterateCategoryChildren(category);
+
+    // get the references by the category ids
+    const references = await this.prismaService.reference.findMany({
+      where: {
+        categoryId: {
+          in: categoryIds,
+        },
+      },
+      take: limit,
+      skip: skip,
+      include: {
+        category: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return references as any;
   }
 
   /* EXTRA LOGIC */

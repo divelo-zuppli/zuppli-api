@@ -16,7 +16,7 @@ import { UserService } from './user.service';
 
 import { CreateUserInput } from './dto/create-user-input.dto';
 import { CreateUserFromAuthUidInput } from './dto/create.user-from-auth-uid-input.dto';
-import { VoidOutput } from './dto/void-output.dto';
+import { VoidOutput } from '../../common/dto/void-output.dto';
 import { SendUserResetPasswordEmail } from './dto/send-user-reset-password-email-input.dto';
 import { ChangeUserPasswordInput } from './dto/change-user-password-input.dto';
 import { ChangeUserEmailInput } from './dto/change-user-email-input.dto';
@@ -24,6 +24,7 @@ import { ChangeUserPhoneNumberInput } from './dto/change-user-phone-number-input
 import { GetOneUserInput } from './dto/get-one-user-input.dto';
 import { GetAllUsersInput } from './dto/get-all-users-input.dto';
 import { CreateUserFromAdminInput } from './dto/create-user-from-admin-input.dto';
+import { UpdateUserInput } from './dto/update-user-input.dto';
 
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @Resolver(() => User)
@@ -58,7 +59,7 @@ export class UserResolver {
     return this.service.getAll(input);
   }
 
-  @Query(() => User, { name: 'getUser' })
+  @Query(() => User, { name: 'getUser', nullable: true })
   getOne(@Args('getOneUserInput') input: GetOneUserInput): Promise<User> {
     return this.service.getOne(input);
   }
@@ -69,6 +70,14 @@ export class UserResolver {
     @Args('sendUserResetPasswordEmail') input: SendUserResetPasswordEmail,
   ): Promise<VoidOutput> {
     return this.service.sendResetPasswordEmail(input);
+  }
+
+  @Mutation(() => User, { name: 'updateUser' })
+  update(
+    @Args('getOneUserInput') getOneUserInput: GetOneUserInput,
+    @Args('updateUserInput') input: UpdateUserInput,
+  ) {
+    return this.service.update(getOneUserInput, input);
   }
 
   @Mutation(() => User, { name: 'changeUserPassword' })
