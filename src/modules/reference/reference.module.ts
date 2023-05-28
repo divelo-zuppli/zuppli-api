@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+import appConfig from '../../config/app.config';
 
 import { ReferenceService } from './reference.service';
 import { PrismaService } from '../../prisma.service';
@@ -8,7 +11,7 @@ import { ReferenceResolver } from './reference.resolver';
 import { CategoryModule } from '../category/category.module';
 
 @Module({
-  imports: [CategoryModule],
+  imports: [ConfigModule.forFeature(appConfig), CategoryModule],
   providers: [
     ReferenceService,
     PrismaService,
