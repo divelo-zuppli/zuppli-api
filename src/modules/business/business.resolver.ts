@@ -67,9 +67,9 @@ export class BusinessResolver {
 
   @ResolveField(() => User, { name: 'user' })
   user(@Parent() parent: Business): Promise<User> {
-    const value: any = parent.user;
+    const value: any = parent.user || parent.userId;
 
-    if (!value) return Promise.resolve(null);
+    if (!value) return Promise.resolve(undefined);
 
     let id = value;
 
